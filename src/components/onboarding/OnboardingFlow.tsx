@@ -54,8 +54,11 @@ export const OnboardingFlow = () => {
         title: "Welcome!",
         description: "Your profile has been created successfully.",
       });
-      // Navigate to dashboard immediately after successful onboarding
-      navigate('/', { replace: true });
+      
+      // Small delay to ensure state is updated before navigation
+      setTimeout(() => {
+        navigate('/', { replace: true });
+      }, 100);
     } catch (error) {
       toast({
         title: "Error",
