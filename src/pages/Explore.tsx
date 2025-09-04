@@ -1,6 +1,7 @@
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
+import { ExploreTabs } from '@/components/explore/ExploreTabs';
 
 const Explore = () => {
   return (
@@ -20,9 +21,7 @@ const Explore = () => {
                 </p>
               </div>
               
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">Coming soon...</p>
-              </div>
+              <ExploreTabs />
             </div>
           </main>
         </div>
