@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,7 +11,7 @@ import { Upload, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export const OnboardingFlow = () => {
-  const { completeOnboarding } = useUserProfile();
+  const { profile, completeOnboarding } = useUserProfile();
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -22,6 +22,14 @@ export const OnboardingFlow = () => {
     avatar: '',
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [shouldNavigate, setShouldNavigate] = useState(false);
+
+  // Navigate to dashboard when profile becomes onboarded
+  useEffect(() => {
+    if (shouldNavigate && profile.isOnboarded) {
+      navigate('/', { replace: true });
+    }
+  }, [profile.isOnboarded, shouldNavigate, navigate]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -55,10 +63,8 @@ export const OnboardingFlow = () => {
         description: "Your profile has been created successfully.",
       });
       
-      // Small delay to ensure state is updated before navigation
-      setTimeout(() => {
-        navigate('/', { replace: true });
-      }, 100);
+      // Trigger navigation when profile state updates
+      setShouldNavigate(true);
     } catch (error) {
       toast({
         title: "Error",
