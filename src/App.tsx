@@ -35,6 +35,11 @@ function RouteGuard({ children, requiredAuth, allowOnboarding = false }: {
   useEffect(() => {
     if (navigatingRef.current) return;
 
+    // Don't redirect immediately if we're on onboarding and loading profile data
+    if (location.pathname === '/onboarding' && isConnected && !profile.isOnboarded) {
+      return;
+    }
+
     const timer = setTimeout(() => {
       // Landing page - only accessible when wallet not connected
       if (requiredAuth === 'none' && isConnected) {
