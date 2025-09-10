@@ -34,9 +34,7 @@ export const OnboardingFlow = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
+  const handleSubmit = async () => {
     if (!formData.name.trim()) {
       toast({
         title: "Name required",
@@ -77,7 +75,7 @@ export const OnboardingFlow = () => {
         </CardHeader>
         
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form className="space-y-6">
             {/* Avatar Upload */}
             <div className="flex flex-col items-center space-y-4">
               <Avatar className="w-24 h-24">
@@ -137,7 +135,12 @@ export const OnboardingFlow = () => {
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button 
+              type="button" 
+              className="w-full" 
+              disabled={isLoading}
+              onClick={handleSubmit}
+            >
               {isLoading ? 'Creating Profile...' : 'Complete Setup'}
             </Button>
           </form>
