@@ -62,21 +62,13 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Premium Web3 theme colors
+				// Web3 theme colors
 				web3: {
 					orange: 'hsl(var(--web3-orange))',
 					'orange-muted': 'hsl(var(--web3-orange-muted))',
 					blue: 'hsl(var(--web3-blue))',
-					cyan: 'hsl(var(--web3-cyan))',
-					teal: 'hsl(var(--web3-teal))',
-					purple: 'hsl(var(--web3-purple))',
 					success: 'hsl(var(--web3-success))',
 					warning: 'hsl(var(--web3-warning))'
-				},
-				premium: {
-					glow: 'hsl(var(--premium-glow))',
-					dark: 'hsl(var(--premium-dark))',
-					darker: 'hsl(var(--premium-darker))'
 				},
 				badge: {
 					bronze: 'hsl(var(--badge-bronze))',
@@ -87,14 +79,11 @@ export default {
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-card': 'var(--gradient-card)',
-				'gradient-glow': 'var(--gradient-glow)',
-				'gradient-cyan': 'var(--gradient-cyan)',
-				'gradient-purple': 'var(--gradient-purple)'
+				'gradient-glow': 'var(--gradient-glow)'
 			},
 			boxShadow: {
 				'glow': 'var(--shadow-glow)',
-				'card': 'var(--shadow-card)',
-				'cyan': 'var(--shadow-cyan)'
+				'card': 'var(--shadow-card)'
 			},
 			transitionProperty: {
 				'smooth': 'var(--transition-smooth)'

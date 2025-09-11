@@ -39,20 +39,12 @@ All colors MUST be HSL.
 
     --radius: 0.75rem;
 
-    /* Premium Web3 theme tokens */
+    /* Custom Web3 theme tokens */
     --web3-orange: 25 95% 53%;
     --web3-orange-muted: 25 70% 45%;
     --web3-blue: 220 70% 50%;
-    --web3-cyan: 180 100% 45%;
-    --web3-teal: 174 100% 29%;
-    --web3-purple: 270 50% 60%;
     --web3-success: 142 76% 36%;
     --web3-warning: 43 89% 58%;
-    
-    /* Premium colors */
-    --premium-glow: 180 100% 50%;
-    --premium-dark: 225 25% 12%;
-    --premium-darker: 225 25% 8%;
     
     /* Badge colors */
     --badge-bronze: 30 60% 50%;
@@ -82,11 +74,11 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Premium Dark Theme */
-    --background: 225 25% 8%;
+    /* Dark Theme */
+    --background: 240 10% 8%;
     --foreground: 210 40% 98%;
 
-    --card: 225 25% 12%;
+    --card: 240 10% 10%;
     --card-foreground: 210 40% 98%;
 
     --popover: 240 10% 10%;
@@ -95,20 +87,20 @@ All colors MUST be HSL.
     --primary: 25 95% 53%;
     --primary-foreground: 240 10% 8%;
 
-    --secondary: 225 25% 16%;
+    --secondary: 240 10% 15%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 225 25% 16%;
+    --muted: 240 10% 15%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 180 100% 45%;
-    --accent-foreground: 225 25% 8%;
+    --accent: 25 95% 53%;
+    --accent-foreground: 240 10% 8%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 225 25% 20%;
-    --input: 225 25% 15%;
+    --border: 240 10% 20%;
+    --input: 240 10% 15%;
     --ring: 25 95% 53%;
 
     /* Badge colors - darker theme versions */
@@ -116,16 +108,13 @@ All colors MUST be HSL.
     --badge-silver: 210 20% 70%;
     --badge-gold: 51 100% 50%;
     
-    /* Premium gradients */
-    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(225 25% 14%));
-    --gradient-glow: radial-gradient(circle at center, hsl(var(--premium-glow) / 0.15), transparent 70%);
-    --gradient-cyan: linear-gradient(135deg, hsl(var(--web3-cyan)), hsl(var(--web3-teal)));
-    --gradient-purple: linear-gradient(135deg, hsl(var(--web3-purple)), hsl(270 50% 45%));
+    /* Gradients - darker theme versions */
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(240 10% 12%));
+    --gradient-glow: radial-gradient(circle at center, hsl(var(--web3-orange) / 0.2), transparent 70%);
 
-    /* Premium shadows */
-    --shadow-glow: 0 0 40px hsl(var(--premium-glow) / 0.2);
-    --shadow-card: 0 8px 32px -8px hsl(225 25% 4% / 0.6);
-    --shadow-cyan: 0 8px 32px -8px hsl(var(--web3-cyan) / 0.3);
+    /* Shadows - darker theme versions */
+    --shadow-glow: 0 0 40px hsl(var(--web3-orange) / 0.3);
+    --shadow-card: 0 10px 30px -5px hsl(240 10% 3% / 0.5);
 
     --sidebar-background: 240 10% 8%;
     --sidebar-foreground: 210 40% 98%;
