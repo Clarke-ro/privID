@@ -16,6 +16,7 @@ import Wallet from "./pages/Wallet";
 import Explore from "./pages/Explore";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
+import Leaderboard from "./pages/Leaderboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -147,6 +148,11 @@ const AppContent = () => {
         <Route path="/profile" element={
           <RouteGuard requiredAuth="complete">
             <Profile />
+          </RouteGuard>
+        } />
+        <Route path="/leaderboard" element={
+          <RouteGuard requiredAuth="complete">
+            <Leaderboard />
           </RouteGuard>
         } />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
