@@ -11,63 +11,52 @@ import { useUserProfile } from '@/hooks/useUserProfile';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect, useState } from 'react';
 import heroBg from '@/assets/web3-hero-bg.jpg';
-
 const Index = () => {
-  const { reputation } = useReputation();
-  const { profile } = useUserProfile();
+  const {
+    reputation
+  } = useReputation();
+  const {
+    profile
+  } = useUserProfile();
   const isMobile = useIsMobile();
   const [scrollY, setScrollY] = useState(0);
-  
   const backgroundImage = profile.avatar || heroBg;
-
   useEffect(() => {
     if (!isMobile) return;
-
     const handleScroll = () => {
       setScrollY(window.scrollY);
     };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll, {
+      passive: true
+    });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [isMobile]);
-
   if (isMobile) {
     const heroHeight = 50; // vh
-    const blurStart = (window.innerHeight * heroHeight) / 100 * 0.6;
-    const blurMax = (window.innerHeight * heroHeight) / 100;
-    
+    const blurStart = window.innerHeight * heroHeight / 100 * 0.6;
+    const blurMax = window.innerHeight * heroHeight / 100;
     const blurAmount = Math.min(Math.max((scrollY - blurStart) / (blurMax - blurStart), 0), 1) * 8;
     const overlayOpacity = Math.min(Math.max(scrollY / blurMax, 0), 0.8);
-
-    return (
-      <div className="min-h-screen bg-background">
+    return <div className="min-h-screen bg-background">
         {/* Hero Background */}
-        <div 
-          className="fixed top-0 left-0 w-full h-screen bg-cover bg-center z-0"
-          style={{
-            backgroundImage: `url(${backgroundImage})`,
-            filter: `blur(${blurAmount}px)`,
-            transform: `translateY(${scrollY * 0.5}px)`,
-          }}
-        />
+        <div className="fixed top-0 left-0 w-full h-screen bg-cover bg-center z-0" style={{
+        backgroundImage: `url(${backgroundImage})`,
+        filter: `blur(${blurAmount}px)`,
+        transform: `translateY(${scrollY * 0.5}px)`
+      }} />
         
         {/* Overlay */}
-        <div 
-          className="fixed top-0 left-0 w-full h-screen bg-background z-10"
-          style={{ opacity: overlayOpacity }}
-        />
+        <div className="fixed top-0 left-0 w-full h-screen bg-background z-10" style={{
+        opacity: overlayOpacity
+      }} />
 
         {/* Content */}
         <div className="relative z-20">
           {/* Hero Section */}
           <div className="min-h-[50vh] flex flex-col justify-end p-6 pb-8">
             <div className="space-y-4">
-              <h1 className="text-4xl font-bold text-white drop-shadow-lg">
-                Dashboard
-              </h1>
-              <p className="text-lg text-white/90 drop-shadow-md">
-                Monitor your encrypted reputation and Web3 activity
-              </p>
+              
+              
             </div>
           </div>
 
@@ -91,21 +80,16 @@ const Index = () => {
                 <MilestoneAchievements />
               </div>
 
-              {reputation && (
-                <div>
+              {reputation && <div>
                   <h2 className="text-xl font-semibold mb-4">Reputation ID</h2>
                   <ReputationCard />
-                </div>
-              )}
+                </div>}
             </div>
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <SidebarProvider>
+  return <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
         
@@ -137,17 +121,13 @@ const Index = () => {
                 <MilestoneAchievements />
               </div>
 
-              {reputation && (
-                <div className="mt-6">
+              {reputation && <div className="mt-6">
                   <ReputationCard />
-                </div>
-              )}
+                </div>}
             </div>
           </main>
         </div>
       </div>
-    </SidebarProvider>
-  );
+    </SidebarProvider>;
 };
-
 export default Index;
