@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { MobileLayout } from '@/components/layout/MobileLayout';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/layout/Sidebar';
+import { Header } from '@/components/layout/Header';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
@@ -56,10 +59,12 @@ export default function Leaderboard() {
   const [userRank] = useState(5);
   const nextLevelScore = 1500;
   const progress = ((userScore % 500) / 500) * 100;
+  const isMobile = useIsMobile();
 
-  return (
-    <MobileLayout>
-      <div className="space-y-6 p-6">
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="space-y-6 p-6">
         {/* Header */}
         <div className="space-y-2">
           <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
@@ -262,7 +267,227 @@ export default function Leaderboard() {
             </Card>
           </TabsContent>
         </Tabs>
+        </div>
       </div>
-    </MobileLayout>
+    );
+  }
+
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full bg-background">
+        <AppSidebar />
+        
+        <div className="flex-1 flex flex-col">
+          <Header />
+          
+          <main className="flex-1 p-6">
+            <div className="space-y-6">
+              {/* Header */}
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+                  <Trophy className="w-8 h-8 text-web3-orange" />
+                  Leaderboard
+                </h1>
+                <p className="text-muted-foreground">
+                  Compete with others and climb the ranks
+                </p>
+              </div>
+
+              {/* User Progress Card */}
+              <Card className="bg-gradient-card border-border/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Your Progress</span>
+                    <Badge variant={getBadgeVariant('bronze')} className="flex items-center gap-1">
+                      {getRankIcon(userRank)}
+                      Rank #{userRank}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-2xl font-bold">{userScore.toLocaleString()}</p>
+                      <p className="text-muted-foreground">Current Score</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-lg font-semibold text-web3-success">+65</p>
+                      <p className="text-sm text-muted-foreground">This week</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>Progress to next level</span>
+                      <span>{userScore}/{nextLevelScore}</span>
+                    </div>
+                    <Progress value={progress} className="h-3" />
+                    <p className="text-xs text-muted-foreground">
+                      {nextLevelScore - userScore} points to reach Bronze Elite
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Tabs for different sections */}
+              <Tabs defaultValue="rankings" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="rankings">Rankings</TabsTrigger>
+                  <TabsTrigger value="achievements">Achievements</TabsTrigger>
+                  <TabsTrigger value="rewards">Rewards</TabsTrigger>
+                </TabsList>
+
+                {/* Rankings Tab */}
+                <TabsContent value="rankings" className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <TrendingUp className="w-5 h-5 text-web3-orange" />
+                        Global Rankings
+                      </CardTitle>
+                      <CardDescription>
+                        Top performers this week
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {mockLeaderboard.map((user) => (
+                          <div
+                            key={user.id}
+                            className={`flex items-center gap-4 p-3 rounded-lg border transition-colors ${
+                              user.rank === userRank ? 'bg-web3-orange/10 border-web3-orange/30' : 'hover:bg-muted/50'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3">
+                              {getRankIcon(user.rank)}
+                              <Avatar className="w-10 h-10">
+                                <span className="text-lg">{user.avatar}</span>
+                              </Avatar>
+                            </div>
+                            
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <p className="font-medium truncate">{user.name}</p>
+                                <Badge variant={getBadgeVariant(user.badge)} className="text-xs">
+                                  {user.badge === 'none' ? 'Unranked' : user.badge.charAt(0).toUpperCase() + user.badge.slice(1)}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                {user.score.toLocaleString()} points
+                              </p>
+                            </div>
+                            
+                            <div className="text-right">
+                              <p className="text-sm font-medium text-web3-success">{user.weeklyGain}</p>
+                              <p className="text-xs text-muted-foreground">this week</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                {/* Achievements Tab */}
+                <TabsContent value="achievements" className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Star className="w-5 h-5 text-web3-orange" />
+                        Achievements
+                      </CardTitle>
+                      <CardDescription>
+                        Unlock rewards by completing challenges
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid gap-4">
+                        {achievements.map((achievement) => (
+                          <div
+                            key={achievement.id}
+                            className={`flex items-center gap-4 p-4 rounded-lg border transition-all ${
+                              achievement.unlocked
+                                ? 'bg-web3-success/10 border-web3-success/30'
+                                : 'bg-muted/30 border-border opacity-60'
+                            }`}
+                          >
+                            <div className="text-2xl">{achievement.icon}</div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <h3 className="font-medium">{achievement.name}</h3>
+                                {achievement.unlocked && (
+                                  <Badge variant="default" className="text-xs bg-web3-success">
+                                    Unlocked
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                {achievement.description}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm font-medium text-web3-orange">{achievement.reward}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                {/* Rewards Tab */}
+                <TabsContent value="rewards" className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Gift className="w-5 h-5 text-web3-orange" />
+                        Rewards Store
+                      </CardTitle>
+                      <CardDescription>
+                        Spend your points on exclusive rewards
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {rewards.map((reward) => (
+                          <div
+                            key={reward.id}
+                            className="flex flex-col gap-3 p-4 rounded-lg border bg-card hover:shadow-md transition-shadow"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="text-2xl">{reward.icon}</div>
+                              <div className="flex-1">
+                                <h3 className="font-medium">{reward.name}</h3>
+                                <p className="text-sm text-muted-foreground">
+                                  {reward.description}
+                                </p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1">
+                                <Zap className="w-4 h-4 text-web3-orange" />
+                                <span className="font-medium">{reward.cost} points</span>
+                              </div>
+                              <Button
+                                variant={userScore >= reward.cost ? "default" : "secondary"}
+                                size="sm"
+                                disabled={userScore < reward.cost}
+                              >
+                                {userScore >= reward.cost ? "Redeem" : "Locked"}
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </div>
+          </main>
+        </div>
+      </div>
+    </SidebarProvider>
   );
 }
