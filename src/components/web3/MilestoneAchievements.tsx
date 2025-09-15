@@ -16,7 +16,7 @@ export const MilestoneAchievements = () => {
       description: 'Complete your first DeFi transaction',
       icon: Award,
       threshold: 1,
-      points: 100,
+      points: 0,
       tier: 'Common',
       completed: currentScore >= 1,
     },
@@ -131,10 +131,12 @@ export const MilestoneAchievements = () => {
           <div className="space-y-3 pt-4 border-t border-border">
             <div className="flex items-center justify-between">
               <h4 className="font-semibold">Next Milestone: {nextMilestone.title}</h4>
-              <div className="text-right">
-                <div className="text-lg font-bold text-web3-orange">+{nextMilestone.points.toLocaleString()}</div>
-                <div className="text-xs text-muted-foreground">Reputation Points</div>
-              </div>
+              {nextMilestone.points > 0 && (
+                <div className="text-right">
+                  <div className="text-lg font-bold text-web3-orange">+{nextMilestone.points.toLocaleString()}</div>
+                  <div className="text-xs text-muted-foreground">Reputation Points</div>
+                </div>
+              )}
             </div>
             
             <p className="text-sm text-muted-foreground">{nextMilestone.description}</p>
