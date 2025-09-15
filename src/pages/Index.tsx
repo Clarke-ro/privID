@@ -7,14 +7,18 @@ import { ActivityFeed } from '@/components/web3/ActivityFeed';
 import { UserProfileCard } from '@/components/web3/UserProfileCard';
 import { MilestoneAchievements } from '@/components/web3/MilestoneAchievements';
 import { useReputation } from '@/hooks/useReputation';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useEffect, useState } from 'react';
 import heroBg from '@/assets/web3-hero-bg.jpg';
 
 const Index = () => {
   const { reputation } = useReputation();
+  const { profile } = useUserProfile();
   const isMobile = useIsMobile();
   const [scrollY, setScrollY] = useState(0);
+  
+  const backgroundImage = profile.avatar || heroBg;
 
   useEffect(() => {
     if (!isMobile) return;
@@ -41,7 +45,7 @@ const Index = () => {
         <div 
           className="fixed top-0 left-0 w-full h-screen bg-cover bg-center z-0"
           style={{
-            backgroundImage: `url(${heroBg})`,
+            backgroundImage: `url(${backgroundImage})`,
             filter: `blur(${blurAmount}px)`,
             transform: `translateY(${scrollY * 0.5}px)`,
           }}
