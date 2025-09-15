@@ -9,7 +9,6 @@ import { useWeb3 } from "@/hooks/useWeb3";
 import { useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Landing from "./pages/Landing";
-import Onboarding from "./pages/Onboarding";
 import Index from "./pages/Index";
 import Activity from "./pages/Activity";
 import Wallet from "./pages/Wallet";
@@ -21,92 +20,47 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-// Centralized route guard component
-function RouteGuard({ children, requiredAuth, allowOnboarding = false }: { 
+// Simplified route guard component
+function RouteGuard({ children, requiredAuth }: { 
   children: React.ReactNode;
-  requiredAuth: 'none' | 'wallet' | 'complete';
-  allowOnboarding?: boolean;
+  requiredAuth: 'none' | 'wallet';
 }) {
   const { isConnected } = useWeb3();
-  const { profile } = useUserProfile();
   const navigate = useNavigate();
-  const location = useLocation();
   const navigatingRef = useRef(false);
 
   useEffect(() => {
     if (navigatingRef.current) return;
 
-    // Don't redirect immediately if we're on onboarding and loading profile data
-    if (location.pathname === '/onboarding' && isConnected && !profile.isOnboarded) {
-      return;
-    }
-
     const timer = setTimeout(() => {
       // Landing page - only accessible when wallet not connected
       if (requiredAuth === 'none' && isConnected) {
-        if (profile.isOnboarded) {
-          navigatingRef.current = true;
-          navigate('/', { replace: true });
-          setTimeout(() => { navigatingRef.current = false; }, 100);
-        } else {
-          navigatingRef.current = true;
-          navigate('/onboarding', { replace: true });
-          setTimeout(() => { navigatingRef.current = false; }, 100);
-        }
+        navigatingRef.current = true;
+        navigate('/', { replace: true });
+        setTimeout(() => { navigatingRef.current = false; }, 100);
         return;
       }
 
-      // Onboarding page - only accessible when wallet connected but not onboarded
-      if (requiredAuth === 'wallet' && allowOnboarding) {
-        if (!isConnected) {
-          navigatingRef.current = true;
-          navigate('/landing', { replace: true });
-          setTimeout(() => { navigatingRef.current = false; }, 100);
-        } else if (profile.isOnboarded) {
-          navigatingRef.current = true;
-          navigate('/', { replace: true });
-          setTimeout(() => { navigatingRef.current = false; }, 100);
-        }
-        return;
-      }
-
-      // Dashboard pages - only accessible when wallet connected and onboarded
-      if (requiredAuth === 'complete') {
-        if (!isConnected) {
-          navigatingRef.current = true;
-          navigate('/landing', { replace: true });
-          setTimeout(() => { navigatingRef.current = false; }, 100);
-        } else if (!profile.isOnboarded) {
-          navigatingRef.current = true;
-          navigate('/onboarding', { replace: true });
-          setTimeout(() => { navigatingRef.current = false; }, 100);
-        }
+      // Dashboard pages - only accessible when wallet connected
+      if (requiredAuth === 'wallet' && !isConnected) {
+        navigatingRef.current = true;
+        navigate('/landing', { replace: true });
+        setTimeout(() => { navigatingRef.current = false; }, 100);
         return;
       }
     }, 50);
 
     return () => clearTimeout(timer);
-  }, [isConnected, profile.isOnboarded, navigate, location.pathname, requiredAuth, allowOnboarding]);
+  }, [isConnected, navigate, requiredAuth]);
 
   // Show loading or nothing while redirecting
   if (requiredAuth === 'none' && isConnected) return null;
-  if (requiredAuth === 'wallet' && allowOnboarding && (!isConnected || profile.isOnboarded)) return null;
-  if (requiredAuth === 'complete' && (!isConnected || !profile.isOnboarded)) return null;
+  if (requiredAuth === 'wallet' && !isConnected) return null;
 
   return <>{children}</>;
 }
 
 const AppContent = () => {
-  const { profile, isLoading } = useUserProfile();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
   return (
     <BrowserRouter>
       <Routes>
@@ -115,43 +69,38 @@ const AppContent = () => {
             <Landing />
           </RouteGuard>
         } />
-        <Route path="/onboarding" element={
-          <RouteGuard requiredAuth="wallet" allowOnboarding={true}>
-            <Onboarding />
-          </RouteGuard>
-        } />
         <Route path="/" element={
-          <RouteGuard requiredAuth="complete">
+          <RouteGuard requiredAuth="wallet">
             <Index />
           </RouteGuard>
         } />
         <Route path="/activity" element={
-          <RouteGuard requiredAuth="complete">
+          <RouteGuard requiredAuth="wallet">
             <Activity />
           </RouteGuard>
         } />
         <Route path="/wallet" element={
-          <RouteGuard requiredAuth="complete">
+          <RouteGuard requiredAuth="wallet">
             <Wallet />
           </RouteGuard>
         } />
         <Route path="/explore" element={
-          <RouteGuard requiredAuth="complete">
+          <RouteGuard requiredAuth="wallet">
             <Explore />
           </RouteGuard>
         } />
         <Route path="/messages" element={
-          <RouteGuard requiredAuth="complete">
+          <RouteGuard requiredAuth="wallet">
             <Messages />
           </RouteGuard>
         } />
         <Route path="/profile" element={
-          <RouteGuard requiredAuth="complete">
+          <RouteGuard requiredAuth="wallet">
             <Profile />
           </RouteGuard>
         } />
         <Route path="/leaderboard" element={
-          <RouteGuard requiredAuth="complete">
+          <RouteGuard requiredAuth="wallet">
             <Leaderboard />
           </RouteGuard>
         } />

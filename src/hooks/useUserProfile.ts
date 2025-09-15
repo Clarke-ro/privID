@@ -5,7 +5,6 @@ export interface UserProfile {
   role: string;
   about: string;
   avatar: string;
-  isOnboarded: boolean;
 }
 
 const DEFAULT_PROFILE: UserProfile = {
@@ -13,7 +12,6 @@ const DEFAULT_PROFILE: UserProfile = {
   role: '',
   about: '',
   avatar: '',
-  isOnboarded: false,
 };
 
 export const useUserProfile = () => {
@@ -42,15 +40,6 @@ export const useUserProfile = () => {
     localStorage.setItem('userProfile', JSON.stringify(updatedProfile));
   }, [profile]);
 
-  // Complete onboarding
-  const completeOnboarding = useCallback(async (profileData: Omit<UserProfile, 'isOnboarded'>) => {
-    return new Promise<void>((resolve) => {
-      const completedProfile = { ...profileData, isOnboarded: true };
-      setProfile(completedProfile);
-      localStorage.setItem('userProfile', JSON.stringify(completedProfile));
-      resolve();
-    });
-  }, []);
 
   // Update profile (for editing)
   const updateProfile = useCallback((updates: Partial<UserProfile>) => {
@@ -67,7 +56,6 @@ export const useUserProfile = () => {
     profile,
     isLoading,
     updateProfile,
-    completeOnboarding,
     resetProfile,
   };
 };
