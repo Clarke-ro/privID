@@ -9,7 +9,7 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Light Theme */
-    --background: radial-gradient(ellipse 120% 80% at 75% 25%, hsl(142 76% 36% / 0.8) 0%, hsl(142 76% 36% / 0.6) 25%, hsl(142 76% 36% / 0.3) 50%, hsl(142 76% 36% / 0.1) 75%, hsl(0 0% 0%) 100%), linear-gradient(135deg, hsl(0 0% 0%) 0%, hsl(0 0% 5%) 100%);
+    --background: radial-gradient(ellipse 60% 40% at 75% 25%, hsl(142 76% 36% / 0.9) 0%, hsl(142 76% 36% / 0.7) 30%, hsl(142 76% 36% / 0.2) 60%, hsl(0 0% 0%) 70%), linear-gradient(135deg, hsl(0 0% 0%) 0%, hsl(0 0% 5%) 100%);
     --foreground: 0 0% 100%;
 
     --card: 0 0% 100%;
@@ -45,7 +45,7 @@ All colors MUST be HSL.
     --tab-inactive: 220 40% 25%;
     
     /* Gradients */
-    --gradient-primary: radial-gradient(ellipse 120% 80% at 75% 25%, hsl(142 76% 36% / 0.8) 0%, hsl(142 76% 36% / 0.6) 25%, hsl(142 76% 36% / 0.3) 50%, hsl(142 76% 36% / 0.1) 75%, hsl(0 0% 0%) 100%), linear-gradient(135deg, hsl(0 0% 0%) 0%, hsl(0 0% 5%) 100%);
+    --gradient-primary: radial-gradient(ellipse 60% 40% at 75% 25%, hsl(142 76% 36% / 0.9) 0%, hsl(142 76% 36% / 0.7) 30%, hsl(142 76% 36% / 0.2) 60%, hsl(0 0% 0%) 70%), linear-gradient(135deg, hsl(0 0% 0%) 0%, hsl(0 0% 5%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(220 45% 18%), hsl(220 40% 22%));
     --gradient-glow: radial-gradient(circle at center, hsl(142 76% 36% / 0.1), transparent 70%);
 
@@ -68,7 +68,7 @@ All colors MUST be HSL.
 
   .dark {
     /* Dark Theme */
-    --background: radial-gradient(ellipse 120% 80% at 75% 25%, hsl(142 76% 36% / 0.8) 0%, hsl(142 76% 36% / 0.6) 25%, hsl(142 76% 36% / 0.3) 50%, hsl(142 76% 36% / 0.1) 75%, hsl(0 0% 0%) 100%), linear-gradient(135deg, hsl(0 0% 0%) 0%, hsl(0 0% 5%) 100%);
+    --background: radial-gradient(ellipse 60% 40% at 75% 25%, hsl(142 76% 36% / 0.9) 0%, hsl(142 76% 36% / 0.7) 30%, hsl(142 76% 36% / 0.2) 60%, hsl(0 0% 0%) 70%), linear-gradient(135deg, hsl(0 0% 0%) 0%, hsl(0 0% 5%) 100%);
     --foreground: 0 0% 100%;
 
     --card: 220 45% 12%;
@@ -102,7 +102,7 @@ All colors MUST be HSL.
     --tab-inactive: 220 40% 18%;
     
     /* Gradients */
-    --gradient-primary: radial-gradient(ellipse 120% 80% at 75% 25%, hsl(142 76% 36% / 0.8) 0%, hsl(142 76% 36% / 0.6) 25%, hsl(142 76% 36% / 0.3) 50%, hsl(142 76% 36% / 0.1) 75%, hsl(0 0% 0%) 100%), linear-gradient(135deg, hsl(0 0% 0%) 0%, hsl(0 0% 5%) 100%);
+    --gradient-primary: radial-gradient(ellipse 60% 40% at 75% 25%, hsl(142 76% 36% / 0.9) 0%, hsl(142 76% 36% / 0.7) 30%, hsl(142 76% 36% / 0.2) 60%, hsl(0 0% 0%) 70%), linear-gradient(135deg, hsl(0 0% 0%) 0%, hsl(0 0% 5%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(220 45% 12%), hsl(220 40% 16%));
     --gradient-glow: radial-gradient(circle at center, hsl(142 76% 36% / 0.2), transparent 70%);
 
