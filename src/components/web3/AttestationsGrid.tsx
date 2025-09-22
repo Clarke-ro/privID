@@ -1,5 +1,5 @@
 import { AttestationCard } from './AttestationCard';
-import { ReputationCard } from './ReputationCard';
+import { IDCard } from './IDCard';
 import { toast } from 'sonner';
 
 interface Attestation {
@@ -52,9 +52,9 @@ export const AttestationsGrid = () => {
           onLink={() => handleLinkAttestation(attestations[4].id, attestations[4].title)}
         />
         
-        {/* Central ReputationCard spanning 2 columns */}
+        {/* Central IDCard spanning 2 columns */}
         <div className="col-span-2">
-          <ReputationCard />
+          <IDCard />
         </div>
         
         <AttestationCard
