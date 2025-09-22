@@ -10,8 +10,12 @@ import { AirdropStatusCards } from '@/components/airdrop/AirdropStatusCards';
 import { AirdropCategoriesFilter } from '@/components/airdrop/AirdropCategoriesFilter';
 import { AirdropTable } from '@/components/airdrop/AirdropTable';
 import { AirdropAnalytics } from '@/components/airdrop/AirdropAnalytics';
+import { AirdropFormModal } from '@/components/airdrop/AirdropFormModal';
+import { useState } from 'react';
 
 const Airdrop = () => {
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
@@ -33,7 +37,10 @@ const Airdrop = () => {
                   {/* Header */}
                   <div className="flex items-center justify-between">
                     <h1 className="text-3xl font-bold">My Airdrop Management</h1>
-                    <Button className="bg-gradient-primary hover:shadow-glow">
+                    <Button 
+                      className="bg-gradient-primary hover:shadow-glow"
+                      onClick={() => setIsFormModalOpen(true)}
+                    >
                       <Plus className="w-4 h-4 mr-2" />
                       Create New
                     </Button>
@@ -56,6 +63,12 @@ const Airdrop = () => {
           </main>
         </div>
       </div>
+
+      {/* Add Airdrop Modal */}
+      <AirdropFormModal 
+        open={isFormModalOpen} 
+        onOpenChange={setIsFormModalOpen} 
+      />
     </SidebarProvider>
   );
 };
