@@ -9,121 +9,115 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Light Theme */
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --background: linear-gradient(135deg, hsl(15 100% 95%), hsl(210 100% 95%));
+    --foreground: 0 0% 0%;
 
     --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card-foreground: 0 0% 0%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover-foreground: 0 0% 0%;
 
-    --primary: 25 95% 53%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 210 100% 82%;
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    --secondary: 15 100% 89%;
+    --secondary-foreground: 0 0% 0%;
 
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --accent: 210 100% 82%;
+    --accent-foreground: 0 0% 0%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 25 95% 53%;
+    --border: 0 0% 90%;
+    --input: 0 0% 100%;
+    --ring: 210 100% 82%;
 
     --radius: 0.75rem;
 
-    /* Custom Web3 theme tokens */
-    --web3-orange: 25 95% 53%;
-    --web3-orange-muted: 25 70% 45%;
-    --web3-blue: 220 70% 50%;
-    --web3-success: 142 76% 36%;
-    --web3-warning: 43 89% 58%;
-    
-    /* Badge colors */
-    --badge-bronze: 30 60% 50%;
-    --badge-silver: 210 20% 50%;
-    --badge-gold: 51 100% 50%;
+    /* Custom app colors */
+    --tabs-bg: 15 100% 89%;
+    --tab-active: 210 100% 82%;
+    --tab-inactive: 0 0% 100%;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(var(--web3-orange)), hsl(var(--web3-orange-muted)));
-    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(240 4.8% 97%));
-    --gradient-glow: radial-gradient(circle at center, hsl(var(--web3-orange) / 0.1), transparent 70%);
+    --gradient-primary: linear-gradient(135deg, hsl(15 100% 95%), hsl(210 100% 95%));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(0 0% 98%));
+    --gradient-glow: radial-gradient(circle at center, hsl(210 100% 82% / 0.1), transparent 70%);
 
     /* Shadows */
-    --shadow-glow: 0 0 40px hsl(var(--web3-orange) / 0.2);
-    --shadow-card: 0 10px 30px -5px hsl(240 5.9% 10% / 0.1);
+    --shadow-glow: 0 0 40px hsl(210 100% 82% / 0.2);
+    --shadow-card: 0 10px 30px -5px hsl(0 0% 0% / 0.1);
     
     /* Animation */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 240 5.9% 10%;
-    --sidebar-primary: 25 95% 53%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 240 5.9% 90%;
-    --sidebar-ring: 25 95% 53%;
+    --sidebar-foreground: 0 0% 0%;
+    --sidebar-primary: 210 100% 82%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 210 100% 82%;
   }
 
   .dark {
     /* Dark Theme */
-    --background: 240 10% 8%;
-    --foreground: 210 40% 98%;
+    --background: linear-gradient(135deg, hsl(0 0% 5%), hsl(210 100% 10%));
+    --foreground: 0 0% 100%;
 
-    --card: 240 10% 10%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 240 10% 10%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 25 95% 53%;
-    --primary-foreground: 240 10% 8%;
+    --primary: 210 100% 82%;
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 240 10% 15%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 15 100% 20%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 240 10% 15%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 25 95% 53%;
-    --accent-foreground: 240 10% 8%;
+    --accent: 210 100% 82%;
+    --accent-foreground: 0 0% 0%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 240 10% 20%;
-    --input: 240 10% 15%;
-    --ring: 25 95% 53%;
+    --border: 0 0% 20%;
+    --input: 0 0% 15%;
+    --ring: 210 100% 82%;
 
-    /* Badge colors - darker theme versions */
-    --badge-bronze: 30 60% 50%;
-    --badge-silver: 210 20% 70%;
-    --badge-gold: 51 100% 50%;
+    /* Custom app colors */
+    --tabs-bg: 15 100% 20%;
+    --tab-active: 210 100% 82%;
+    --tab-inactive: 0 0% 15%;
     
-    /* Gradients - darker theme versions */
-    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(240 10% 12%));
-    --gradient-glow: radial-gradient(circle at center, hsl(var(--web3-orange) / 0.2), transparent 70%);
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 5%), hsl(210 100% 10%));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(0 0% 8%));
+    --gradient-glow: radial-gradient(circle at center, hsl(210 100% 82% / 0.2), transparent 70%);
 
-    /* Shadows - darker theme versions */
-    --shadow-glow: 0 0 40px hsl(var(--web3-orange) / 0.3);
-    --shadow-card: 0 10px 30px -5px hsl(240 10% 3% / 0.5);
+    /* Shadows */
+    --shadow-glow: 0 0 40px hsl(210 100% 82% / 0.3);
+    --shadow-card: 0 10px 30px -5px hsl(0 0% 0% / 0.5);
 
-    --sidebar-background: 240 10% 8%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 25 95% 53%;
-    --sidebar-primary-foreground: 240 10% 8%;
-    --sidebar-accent: 240 10% 15%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 240 10% 20%;
-    --sidebar-ring: 25 95% 53%;
+    --sidebar-background: 0 0% 8%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 210 100% 82%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 210 100% 82%;
   }
 }
 
@@ -133,6 +127,8 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    background: var(--gradient-primary);
+    color: hsl(var(--foreground));
+    min-height: 100vh;
   }
 }

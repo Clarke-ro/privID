@@ -92,55 +92,58 @@ const Index = () => {
       </div>;
   }
   return <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
+      <div className="min-h-screen flex w-full">
         <AppSidebar />
         
         <div className="flex-1 flex flex-col">
           <Header />
           
-          {/* Profile Banner */}
-          <ProfileBanner />
-          
-          {/* Horizontal Navigation Tabs */}
-          <HorizontalTabs />
-          
-          <main className="flex-1 p-6 bg-muted/20">
-            <div className="max-w-6xl mx-auto space-y-8">
-              {/* Today's Reputation Increase */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-                    <div className="w-4 h-4 bg-primary rounded-sm"></div>
+          <main className="flex-1 p-6">
+            <div className="max-w-7xl mx-auto space-y-6">
+              {/* Profile Banner */}
+              <ProfileBanner />
+              
+              {/* Horizontal Navigation Tabs - Separated */}
+              <HorizontalTabs />
+              
+              {/* Main Content */}
+              <div className="space-y-8">
+                {/* Today's Reputation Increase */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
+                      <div className="w-4 h-4 bg-primary rounded-sm"></div>
+                    </div>
+                    <h2 className="text-lg font-medium">Today's Reputation Increase</h2>
+                    <div className="text-sm text-muted-foreground ml-auto">Last 7 Days</div>
                   </div>
-                  <h2 className="text-lg font-medium">Today's Reputation Increase</h2>
-                  <div className="text-sm text-muted-foreground ml-auto">Last 7 Days</div>
-                </div>
-                
-                <div className="grid lg:grid-cols-3 gap-6">
-                  <div className="lg:col-span-1">
-                    <ReputationChart />
+                  
+                  <div className="grid lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-1">
+                      <ReputationChart />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Milestone Achievements Section */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Milestone Achievements</h2>
-                  <button className="text-sm text-primary hover:text-primary/80 transition-colors">
-                    View All
-                  </button>
+                {/* Milestone Achievements Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-medium">Milestone Achievements</h2>
+                    <button className="text-sm text-primary hover:text-primary/80 transition-colors">
+                      View All
+                    </button>
+                  </div>
+                  <MilestoneAchievements />
                 </div>
-                <MilestoneAchievements />
-              </div>
 
-              {/* Activity Section */}
-              <div className="grid lg:grid-cols-2 gap-6">
-                <div>
-                  <ActivityFeed />
-                </div>
-                <div>
-                  {reputation && <ReputationCard />}
+                {/* Activity Section */}
+                <div className="grid lg:grid-cols-2 gap-6">
+                  <div>
+                    <ActivityFeed />
+                  </div>
+                  <div>
+                    {reputation && <ReputationCard />}
+                  </div>
                 </div>
               </div>
             </div>
