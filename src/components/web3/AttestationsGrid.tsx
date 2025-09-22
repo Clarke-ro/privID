@@ -1,5 +1,4 @@
 import { AttestationCard } from './AttestationCard';
-import { ReputationCard } from './ReputationCard';
 import { toast } from 'sonner';
 
 interface Attestation {
@@ -33,19 +32,10 @@ export const AttestationsGrid = () => {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-6">
-      <div className="grid grid-cols-5 gap-4">
-        {/* First row - 4 cards with gap for center */}
-        {attestations.slice(0, 2).map((attestation) => (
-          <AttestationCard
-            key={attestation.id}
-            title={attestation.title}
-            status={attestation.status}
-            onLink={() => handleLinkAttestation(attestation.id, attestation.title)}
-          />
-        ))}
-        <div></div> {/* Empty space for center */}
-        {attestations.slice(2, 4).map((attestation) => (
+    <div className="w-full max-w-6xl mx-auto p-6">
+      <div className="grid grid-cols-4 gap-4">
+        {/* First row - 4 cards */}
+        {attestations.slice(0, 4).map((attestation) => (
           <AttestationCard
             key={attestation.id}
             title={attestation.title}
@@ -54,39 +44,28 @@ export const AttestationsGrid = () => {
           />
         ))}
 
-        {/* Second row - 2 cards aligned with first and last columns */}
+        {/* Second row - 2 cards with central ID card */}
         <AttestationCard
           title={attestations[4].title}
           status={attestations[4].status}
           onLink={() => handleLinkAttestation(attestations[4].id, attestations[4].title)}
         />
-        <div></div> {/* Empty space */}
         
-        {/* Central Reputation Card */}
-        <div className="flex justify-center items-center">
-          <div className="w-full max-w-sm">
-            <ReputationCard />
-          </div>
+        {/* Central ID Card spanning 2 columns */}
+        <div className="col-span-2 bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 rounded-lg p-8 text-center text-black shadow-lg flex flex-col justify-center min-h-[128px]">
+          <h2 className="text-2xl font-bold mb-2">Your ID</h2>
+          <p className="text-lg font-medium mb-1">Linked Identity</p>
+          <p className="text-sm opacity-80">Verified across dApps</p>
         </div>
         
-        <div></div> {/* Empty space */}
         <AttestationCard
           title={attestations[5].title}
           status={attestations[5].status}
           onLink={() => handleLinkAttestation(attestations[5].id, attestations[5].title)}
         />
 
-        {/* Third row - 4 cards under the ID card */}
-        {attestations.slice(6, 8).map((attestation) => (
-          <AttestationCard
-            key={attestation.id}
-            title={attestation.title}
-            status={attestation.status}
-            onLink={() => handleLinkAttestation(attestation.id, attestation.title)}
-          />
-        ))}
-        <div></div> {/* Empty space for center */}
-        {attestations.slice(8, 10).map((attestation) => (
+        {/* Third row - 4 cards */}
+        {attestations.slice(6, 10).map((attestation) => (
           <AttestationCard
             key={attestation.id}
             title={attestation.title}
@@ -96,16 +75,7 @@ export const AttestationsGrid = () => {
         ))}
 
         {/* Fourth row - 4 cards */}
-        {attestations.slice(10, 12).map((attestation) => (
-          <AttestationCard
-            key={attestation.id}
-            title={attestation.title}
-            status={attestation.status}
-            onLink={() => handleLinkAttestation(attestation.id, attestation.title)}
-          />
-        ))}
-        <div></div> {/* Empty space for center */}
-        {attestations.slice(12, 14).map((attestation) => (
+        {attestations.slice(10, 14).map((attestation) => (
           <AttestationCard
             key={attestation.id}
             title={attestation.title}
