@@ -3,7 +3,13 @@ import { AppSidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { ProfileBanner } from '@/components/layout/ProfileBanner';
 import { HorizontalTabs } from '@/components/layout/HorizontalTabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
+import { AirdropSidebar } from '@/components/airdrop/AirdropSidebar';
+import { AirdropStatusCards } from '@/components/airdrop/AirdropStatusCards';
+import { AirdropCategoriesFilter } from '@/components/airdrop/AirdropCategoriesFilter';
+import { AirdropTable } from '@/components/airdrop/AirdropTable';
+import { AirdropAnalytics } from '@/components/airdrop/AirdropAnalytics';
 
 const Airdrop = () => {
   return (
@@ -17,17 +23,35 @@ const Airdrop = () => {
           <HorizontalTabs />
           
           <main className="flex-1 p-6 bg-muted/20">
-            <div className="max-w-6xl mx-auto space-y-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Airdrop Opportunities</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground">
-                    Track and participate in upcoming token airdrops.
-                  </p>
-                </CardContent>
-              </Card>
+            <div className="max-w-7xl mx-auto">
+              <div className="flex gap-6">
+                {/* Left Sidebar */}
+                <AirdropSidebar />
+                
+                {/* Main Content */}
+                <div className="flex-1 space-y-6">
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <h1 className="text-3xl font-bold">My Airdrop Management</h1>
+                    <Button className="bg-gradient-primary hover:shadow-glow">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create New
+                    </Button>
+                  </div>
+                  
+                  {/* Status Cards */}
+                  <AirdropStatusCards />
+                  
+                  {/* Categories Filter */}
+                  <AirdropCategoriesFilter />
+                  
+                  {/* Airdrops Table */}
+                  <AirdropTable />
+                </div>
+                
+                {/* Right Analytics */}
+                <AirdropAnalytics />
+              </div>
             </div>
           </main>
         </div>
