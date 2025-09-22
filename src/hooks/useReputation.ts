@@ -33,6 +33,7 @@ export const useReputation = () => {
 
   const updateScoreOnBackend = useCallback(async (address: string) => {
     try {
+      console.log('Sending score update request for address:', address);
       const response = await fetch('http://localhost:3001/update-score', {
         method: 'POST',
         headers: {
@@ -42,16 +43,20 @@ export const useReputation = () => {
       });
 
       if (!response.ok) {
-        console.warn(`Backend update failed: ${response.statusText}`);
-        return false;
+        const errorText = await response.text();
+        console.error(`Backend update failed: ${response.status} ${response.statusText}`, errorText);
+        toast.error(`Backend score update failed: ${response.statusText}`);
+        throw new Error(`Backend update failed: ${response.statusText}`);
       }
 
       const result = await response.json();
-      console.log('Backend score update result:', result);
+      console.log('Backend score update successful:', result);
+      toast.success('Score calculation completed on backend');
       return true;
     } catch (error) {
-      console.warn('Backend not available, using mock data:', error);
-      return false;
+      console.error('Backend score update error:', error);
+      toast.error('Failed to calculate reputation score - backend unavailable');
+      throw error;
     }
   }, []);
 
@@ -60,62 +65,48 @@ export const useReputation = () => {
 
     setLoading(true);
     try {
-      // Try to trigger backend score update (non-blocking)
-      const backendSuccess = await updateScoreOnBackend(account);
+      // First, ensure backend score calculation succeeds
+      console.log('Updating score on backend before reading from contract...');
+      await updateScoreOnBackend(account);
       
-      // Small delay if backend succeeded
-      if (backendSuccess) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      }
+      // Wait for backend processing to complete
+      console.log('Waiting for backend processing...');
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
       const contract = getReputationContract();
       
-      try {
-        // Try new method first
-        const userScore = await contract.getUserScore(account);
-        
-        setReputation({
-          balance: Number(userScore.balance),
-          transfers: Number(userScore.transfers),
-          liquidity: Number(userScore.liquidity),
-          governance: Number(userScore.governance),
-          total: Number(userScore.total),
-        });
-      } catch (contractError) {
-        console.warn('Smart contract call failed, using demo data:', contractError);
-        
-        // Fallback to demo data when contract fails
-        setReputation({
-          balance: 450,
-          transfers: 320,
-          liquidity: 280,
-          governance: 150,
-          total: 1200,
-        });
-      }
+      console.log('Reading user score from smart contract...');
+      const userScore = await contract.getUserScore(account);
+      
+      const reputationData = {
+        balance: Number(userScore.balance),
+        transfers: Number(userScore.transfers),
+        liquidity: Number(userScore.liquidity),
+        governance: Number(userScore.governance),
+        total: Number(userScore.total),
+      };
+      
+      console.log('Reputation data from contract:', reputationData);
+      setReputation(reputationData);
 
-      // Check if user shares total publicly (with fallback)
+      // Check if user shares total publicly
       try {
         const isSharedPublic = await contract.shareTotalPublic(account);
         setIsPublic(isSharedPublic);
-      } catch {
-        setIsPublic(true); // Default to public for demo
+      } catch (error) {
+        console.warn('Could not check public sharing status:', error);
+        setIsPublic(false);
       }
       
       setIsRegistered(true);
-    } catch (error) {
-      console.error('Error in fetchReputation:', error);
+      toast.success('Reputation score loaded successfully');
       
-      // Complete fallback for demo purposes
-      setReputation({
-        balance: 450,
-        transfers: 320,
-        liquidity: 280,
-        governance: 150,
-        total: 1200,
-      });
-      setIsRegistered(true);
-      setIsPublic(true);
+    } catch (error) {
+      console.error('Failed to fetch reputation:', error);
+      toast.error('Failed to load reputation data. Please ensure your backend is running and the smart contract is accessible.');
+      setReputation(null);
+      setIsRegistered(false);
+      setIsPublic(false);
     } finally {
       setLoading(false);
     }
