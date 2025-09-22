@@ -38,26 +38,41 @@ export const useReputation = () => {
     try {
       const contract = getReputationContract();
       
-      // Get reputation breakdown
-      const breakdown = await contract.getMyBreakdown();
-      
-      setReputation({
-        balance: Number(breakdown.balance),
-        transfers: Number(breakdown.transfers),
-        liquidity: Number(breakdown.liquidity),
-        governance: Number(breakdown.governance),
-        total: Number(breakdown.total),
-      });
+      // First check if user is registered by checking if they have a total score
+      try {
+        const breakdown = await contract.getMyBreakdown();
+        
+        // If we get here, user is registered
+        setReputation({
+          balance: Number(breakdown.balance),
+          transfers: Number(breakdown.transfers),
+          liquidity: Number(breakdown.liquidity),
+          governance: Number(breakdown.governance),
+          total: Number(breakdown.total),
+        });
 
-      // Check if user shares total publicly
-      const isSharedPublic = await contract.shareTotalPublic(account);
-      setIsPublic(isSharedPublic);
-      
-      setIsRegistered(true);
+        // Check if user shares total publicly
+        const isSharedPublic = await contract.shareTotalPublic(account);
+        setIsPublic(isSharedPublic);
+        
+        setIsRegistered(true);
+      } catch (contractError: any) {
+        // If contract call fails with empty data, user is not registered
+        if (contractError.code === 'BAD_DATA' && contractError.value === '0x') {
+          console.log('User not registered in reputation contract');
+          setIsRegistered(false);
+          setReputation(null);
+          setIsPublic(false);
+        } else {
+          // Re-throw other errors
+          throw contractError;
+        }
+      }
     } catch (error) {
       console.error('Error fetching reputation:', error);
       setIsRegistered(false);
       setReputation(null);
+      setIsPublic(false);
     } finally {
       setLoading(false);
     }
