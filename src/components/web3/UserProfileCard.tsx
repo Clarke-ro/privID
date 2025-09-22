@@ -7,13 +7,8 @@ import { useWeb3 } from '@/hooks/useWeb3';
 import { useReputation } from '@/hooks/useReputation';
 import { useUserProfile } from '@/hooks/useUserProfile';
 export const UserProfileCard = () => {
-  const {
-    account
-  } = useWeb3();
-  const {
-    reputation,
-    badge
-  } = useReputation();
+  const { account, isConnected } = useWeb3();
+  const { reputation, badge, isRegistered } = useReputation();
   const { profile } = useUserProfile();
   const formatAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -31,14 +26,19 @@ export const UserProfileCard = () => {
     }
   };
 
-  // Show profile even without connection for demo purposes
+  // Use real data when available, fallback for demo/disconnected state
   const displayAccount = account || "0x1234...5678";
-  const displayReputation = reputation?.total || 0;
-  const displayBadge = badge || {
-    type: 'gold' as const,
-    threshold: 1000,
-    name: 'Gold Elite'
-  };
+  const displayReputation = isConnected && isRegistered && reputation?.total 
+    ? reputation.total 
+    : (isConnected ? 0 : 1589); // Show 0 if connected but not registered, demo data if disconnected
+  
+  const displayBadge = (isConnected && isRegistered && badge) 
+    ? badge 
+    : {
+        type: 'gold' as const,
+        threshold: 1000,
+        name: isConnected && !isRegistered ? 'Unregistered' : 'Gold Elite'
+      };
   return <Card className="bg-gradient-card border-border max-w-sm mx-auto">
       <CardContent className="p-6 text-center">
         {/* Profile Image at Top */}
