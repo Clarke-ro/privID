@@ -86,7 +86,6 @@ export const AirdropTable = () => {
               <TableHead>Name</TableHead>
               <TableHead>Eligible</TableHead>
               <TableHead>Type</TableHead>
-              <TableHead>Last</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -126,9 +125,6 @@ export const AirdropTable = () => {
                   <Badge variant="outline" className={getTypeColor(airdrop.type)}>
                     {airdrop.type}
                   </Badge>
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {airdrop.lastInteraction}
                 </TableCell>
               </TableRow>
             ))}
