@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 
 export const ReputationCard = () => {
   const { account, isConnected } = useWeb3();
-  const { reputation, badge, isPublic, togglePublicSharing, isRegistered, register, registering } = useReputation();
+  const { reputation, badge, isPublic, togglePublicSharing, isRegistered } = useReputation();
   const { profile } = useUserProfile();
   const [qrCodeUrl, setQrCodeUrl] = useState('');
 
@@ -88,29 +88,16 @@ export const ReputationCard = () => {
     <Card className="bg-gradient-card border-border shadow-card max-w-4xl mx-auto">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-xl font-bold">
-          {isConnected ? (isRegistered ? 'Golden Reputation ID' : 'Reputation Registration') : 'Golden Reputation ID (Demo)'}
+          {isConnected ? 'Golden Reputation ID' : 'Golden Reputation ID (Demo)'}
         </CardTitle>
         <div className="flex gap-2">
-          {isConnected && !isRegistered ? (
-            <Button 
-              variant="default" 
-              size="sm" 
-              onClick={register}
-              disabled={registering}
-            >
-              {registering ? 'Registering...' : 'Register Now'}
-            </Button>
-          ) : (
-            <>
-              <Button variant="outline" size="sm" onClick={togglePublicSharing} disabled={!isRegistered}>
-                {isPublic ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                {isPublic ? 'Public' : 'Private'}
-              </Button>
-              <Button variant="outline" size="sm" onClick={downloadCard}>
-                <Download className="w-4 h-4" />
-              </Button>
-            </>
-          )}
+          <Button variant="outline" size="sm" onClick={togglePublicSharing} disabled={!isRegistered}>
+            {isPublic ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+            {isPublic ? 'Public' : 'Private'}
+          </Button>
+          <Button variant="outline" size="sm" onClick={downloadCard}>
+            <Download className="w-4 h-4" />
+          </Button>
         </div>
       </CardHeader>
       <CardContent className="p-0">
@@ -174,11 +161,8 @@ export const ReputationCard = () => {
           {/* Main Score */}
           <div className="text-center mb-6 relative z-10">
             <div className="text-5xl font-bold text-black mb-2">
-              {isConnected && !isRegistered ? '---' : (isPublic ? displayScore.toLocaleString() : '***')}
+              {isConnected ? (isPublic ? displayScore.toLocaleString() : '***') : displayScore.toLocaleString()}
             </div>
-            {isConnected && !isRegistered && (
-              <div className="text-sm text-black/70">Register to track your reputation</div>
-            )}
             {!isConnected && (
               <div className="text-sm text-black/70">Demo Mode - Connect wallet for real data</div>
             )}

@@ -37,7 +37,7 @@ export const UserProfileCard = () => {
     : {
         type: 'gold' as const,
         threshold: 1000,
-        name: isConnected && !isRegistered ? 'Unregistered' : 'Gold Elite'
+        name: isConnected ? 'Gold Elite' : 'Gold Elite'
       };
   return <Card className="bg-gradient-card border-border max-w-sm mx-auto">
       <CardContent className="p-6 text-center">

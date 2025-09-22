@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 export const IDCard = () => {
   const { account, isConnected } = useWeb3();
   const { profile } = useUserProfile();
-  const { reputation, isRegistered, loading } = useReputation();
+  const { reputation, isRegistered } = useReputation();
   const [qrCodeUrl, setQrCodeUrl] = useState('');
   
   // Use real data when available, fallback for demo/disconnected state
