@@ -80,6 +80,7 @@ export const useReputation = () => {
 
   const register = useCallback(async () => {
     if (!isConnected) {
+      toast.error('Please connect your wallet first');
       return;
     }
 
@@ -88,12 +89,18 @@ export const useReputation = () => {
       const contract = getReputationContract();
       const tx = await contract.register();
       
+      toast.info('Registration transaction submitted...', {
+        description: 'Please wait for confirmation'
+      });
+      
       await tx.wait();
+      toast.success('Successfully registered for reputation tracking!');
       
       // Fetch reputation after registration
       setTimeout(fetchReputation, 2000);
     } catch (error) {
-      console.error('Auto-registration failed:', error);
+      console.error('Registration failed:', error);
+      toast.error('Registration failed. Please try again.');
     } finally {
       setRegistering(false);
     }
@@ -131,13 +138,6 @@ export const useReputation = () => {
       setIsPublic(false);
     }
   }, [isConnected, account, fetchReputation]);
-
-  // Auto-register when wallet connects and user is not registered
-  useEffect(() => {
-    if (isConnected && account && !loading && !isRegistered && !registering) {
-      register();
-    }
-  }, [isConnected, account, loading, isRegistered, registering, register]);
 
   const badge = reputation ? getBadge(reputation.total) : getBadge(0);
 
