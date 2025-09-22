@@ -80,9 +80,26 @@ export const useAirdrops = () => {
     );
   };
 
+  const deleteAirdrop = (id: string) => {
+    setAirdrops(prev => prev.filter(airdrop => airdrop.id !== id));
+  };
+
+  // Calculate counts
+  const counts = {
+    total: airdrops.length,
+    eligible: airdrops.filter(a => a.eligibility === 'eligible').length,
+    ineligible: airdrops.filter(a => a.eligibility === 'ineligible').length,
+    unknown: airdrops.filter(a => a.eligibility === 'unknown').length,
+    active: airdrops.length,
+    collected: airdrops.filter(a => a.eligibility === 'eligible').length,
+    yetToInteract: airdrops.filter(a => a.eligibility === 'unknown').length
+  };
+
   return {
     airdrops,
     addAirdrop,
-    updateEligibility
+    updateEligibility,
+    deleteAirdrop,
+    counts
   };
 };

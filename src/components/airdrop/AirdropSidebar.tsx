@@ -19,37 +19,47 @@ interface SidebarItem {
   active?: boolean;
 }
 
-export const AirdropSidebar = () => {
+interface AirdropSidebarProps {
+  counts: {
+    total: number;
+    eligible: number;
+    ineligible: number;
+    unknown: number;
+  };
+}
+
+export const AirdropSidebar = ({ counts }: AirdropSidebarProps) => {
   const sidebarItems: SidebarItem[] = [
     {
       id: 'my-airdrop',
       label: 'My Airdrop',
       icon: <Target className="w-4 h-4" />,
+      count: counts.total,
       active: true
     },
     {
       id: 'eligible',
       label: 'Eligible',
       icon: <CheckCircle className="w-4 h-4" />,
-      count: 60
+      count: counts.eligible
     },
     {
       id: 'ineligible',
       label: 'Ineligible',
       icon: <XCircle className="w-4 h-4" />,
-      count: 5
+      count: counts.ineligible
     },
     {
       id: 'favorite',
       label: 'Favorite',
       icon: <Heart className="w-4 h-4" />,
-      count: 12
+      count: 0
     },
     {
       id: 'trash',
       label: 'Trash',
       icon: <Trash2 className="w-4 h-4" />,
-      count: 3
+      count: 0
     },
     {
       id: 'settings',

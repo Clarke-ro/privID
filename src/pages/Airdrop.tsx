@@ -16,7 +16,7 @@ import { useAirdrops } from '@/hooks/useAirdrops';
 
 const Airdrop = () => {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-  const { airdrops, addAirdrop, updateEligibility } = useAirdrops();
+  const { airdrops, addAirdrop, updateEligibility, deleteAirdrop, counts } = useAirdrops();
 
   return (
     <SidebarProvider>
@@ -32,7 +32,7 @@ const Airdrop = () => {
             <div className="max-w-7xl mx-auto">
               <div className="flex gap-6">
                 {/* Left Sidebar */}
-                <AirdropSidebar />
+                <AirdropSidebar counts={counts} />
                 
                 {/* Main Content */}
                 <div className="flex-1 space-y-6">
@@ -49,7 +49,7 @@ const Airdrop = () => {
                   </div>
                   
                   {/* Status Cards */}
-                  <AirdropStatusCards />
+                  <AirdropStatusCards counts={counts} />
                   
                   {/* Categories Filter */}
                   <AirdropCategoriesFilter />
@@ -58,6 +58,7 @@ const Airdrop = () => {
                   <AirdropTable 
                     airdrops={airdrops}
                     onUpdateEligibility={updateEligibility}
+                    onDeleteAirdrop={deleteAirdrop}
                   />
                 </div>
                 

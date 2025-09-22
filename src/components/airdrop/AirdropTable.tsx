@@ -3,15 +3,16 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, XCircle, Clock } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Trash2 } from 'lucide-react';
 import { AirdropItem } from '@/hooks/useAirdrops';
 
 interface AirdropTableProps {
   airdrops: AirdropItem[];
   onUpdateEligibility: (id: string, eligibility: AirdropItem['eligibility']) => void;
+  onDeleteAirdrop: (id: string) => void;
 }
 
-export const AirdropTable = ({ airdrops, onUpdateEligibility }: AirdropTableProps) => {
+export const AirdropTable = ({ airdrops, onUpdateEligibility, onDeleteAirdrop }: AirdropTableProps) => {
 
   const getTypeColor = (type: string) => {
     switch (type) {
@@ -62,6 +63,7 @@ export const AirdropTable = ({ airdrops, onUpdateEligibility }: AirdropTableProp
               <TableHead>Type</TableHead>
               <TableHead>Eligibility Status</TableHead>
               <TableHead>Date Period</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -105,6 +107,16 @@ export const AirdropTable = ({ airdrops, onUpdateEligibility }: AirdropTableProp
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">
                   {airdrop.datePeriod}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDeleteAirdrop(airdrop.id)}
+                    className="h-8 w-8 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
