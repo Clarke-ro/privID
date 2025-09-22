@@ -96,34 +96,61 @@ const Index = () => {
         <div className="flex-1 flex flex-col">
           <Header />
           
-          <main className="flex-1 p-6">
-            <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-                <p className="text-muted-foreground">
-                  Monitor your encrypted reputation and Web3 activity
-                </p>
+          <main className="flex-1 p-8 bg-gradient-to-br from-background to-muted/20">
+            <div className="max-w-7xl mx-auto space-y-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-semibold text-foreground">Today's Reputation Overview</h1>
+                  <p className="text-muted-foreground text-sm mt-1">
+                    {new Date().toLocaleDateString('en-US', { 
+                      weekday: 'long', 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </p>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Last 7 Days
+                </div>
               </div>
 
-              <div className="grid lg:grid-cols-3 gap-6">
-                <div className="space-y-6">
-                  <UserProfileCard />
-                </div>
-                <div className="space-y-6">
+              {/* Reputation Overview Section */}
+              <div className="grid lg:grid-cols-5 gap-6">
+                <div className="lg:col-span-2">
                   <ReputationChart />
                 </div>
-                <div className="space-y-6">
-                  <ActivityFeed />
+                <div className="lg:col-span-3">
+                  <UserProfileCard />
                 </div>
               </div>
 
-              <div className="mt-6">
+              {/* Milestone Achievements Section */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold">Milestone Achievements</h2>
+                  <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    View All
+                  </button>
+                </div>
                 <MilestoneAchievements />
               </div>
 
-              {reputation && <div className="mt-6">
-                  <ReputationCard />
-                </div>}
+              {/* Activity Section */}
+              <div className="grid lg:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-lg font-medium mb-4">Recent Activity</h3>
+                  <ActivityFeed />
+                </div>
+                <div>
+                  {reputation && (
+                    <>
+                      <h3 className="text-lg font-medium mb-4">Reputation Details</h3>
+                      <ReputationCard />
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
           </main>
         </div>
