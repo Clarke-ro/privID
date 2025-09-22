@@ -3,9 +3,7 @@ import { AppSidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { ProfileBanner } from '@/components/layout/ProfileBanner';
 import { HorizontalTabs } from '@/components/layout/HorizontalTabs';
-import { PortfolioBalance } from '@/components/portfolio/PortfolioBalance';
-import { MyCards } from '@/components/portfolio/MyCards';
-import { MyHoldings } from '@/components/portfolio/MyHoldings';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const Portfolio = () => {
   return (
@@ -20,9 +18,16 @@ const Portfolio = () => {
           
           <main className="flex-1 p-6 bg-muted/20">
             <div className="max-w-6xl mx-auto space-y-8">
-              <PortfolioBalance />
-              <MyCards />
-              <MyHoldings />
+              <Card>
+                <CardHeader>
+                  <CardTitle>Portfolio</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">
+                    Your portfolio and investment tracking will be displayed here.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </main>
         </div>
