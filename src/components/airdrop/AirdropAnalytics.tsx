@@ -13,10 +13,16 @@ interface ActivityItem {
   iconColor: string;
 }
 
-export const AirdropAnalytics = () => {
-  const totalActive = 100;
-  const unfit = 65;
-  const interacted = 35;
+interface AirdropAnalyticsProps {
+  counts: {
+    total: number;
+    eligible: number;
+    ineligible: number;
+    unknown: number;
+  };
+}
+
+export const AirdropAnalytics = ({ counts }: AirdropAnalyticsProps) => {
 
   const activities: ActivityItem[] = [
     {
@@ -88,13 +94,13 @@ export const AirdropAnalytics = () => {
                   fill="none"
                   stroke="hsl(var(--primary))"
                   strokeWidth="8"
-                  strokeDasharray={`${(totalActive / 100) * 314} 314`}
+                  strokeDasharray={`${counts.total > 0 ? (counts.eligible / counts.total) * 314 : 0} 314`}
                   className="transition-all duration-300"
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-bold">{totalActive}</span>
-                <span className="text-xs text-muted-foreground">Total Active</span>
+                <span className="text-2xl font-bold">{counts.total}</span>
+                <span className="text-xs text-muted-foreground">Total Airdrops</span>
               </div>
             </div>
           </div>
@@ -102,17 +108,24 @@ export const AirdropAnalytics = () => {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-primary"></div>
-                <span className="text-sm">Unfit fusions</span>
+                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                <span className="text-sm">Eligible</span>
               </div>
-              <span className="text-sm font-medium">{unfit}</span>
+              <span className="text-sm font-medium">{counts.eligible}</span>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-muted"></div>
-                <span className="text-sm">Interacted Tokens</span>
+                <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                <span className="text-sm">Ineligible</span>
               </div>
-              <span className="text-sm font-medium">{interacted}</span>
+              <span className="text-sm font-medium">{counts.ineligible}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                <span className="text-sm">Unknown</span>
+              </div>
+              <span className="text-sm font-medium">{counts.unknown}</span>
             </div>
           </div>
         </CardContent>

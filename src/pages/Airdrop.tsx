@@ -66,7 +66,7 @@ const Airdrop = () => {
                 </div>
                 
                 {/* Right Analytics */}
-                <AirdropAnalytics />
+                <AirdropAnalytics counts={counts} />
               </div>
             </div>
           </main>
