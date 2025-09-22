@@ -31,22 +31,54 @@ export const useReputation = () => {
     return { type: 'none', threshold: 0, name: 'Unranked' };
   }, []);
 
+  const updateScoreOnBackend = useCallback(async (address: string) => {
+    try {
+      const response = await fetch('http://localhost:3001/update-score', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ address }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Backend update failed: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log('Backend score update result:', result);
+      return true;
+    } catch (error) {
+      console.error('Error updating score on backend:', error);
+      toast.error('Failed to update score on backend');
+      return false;
+    }
+  }, []);
+
   const fetchReputation = useCallback(async () => {
     if (!isConnected || !account) return;
 
     setLoading(true);
     try {
+      // First, trigger backend score update
+      const backendSuccess = await updateScoreOnBackend(account);
+      
+      // Small delay to allow backend processing
+      if (backendSuccess) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+
       const contract = getReputationContract();
       
-      // Get reputation breakdown
-      const breakdown = await contract.getMyBreakdown();
+      // Get reputation breakdown using new method
+      const userScore = await contract.getUserScore(account);
       
       setReputation({
-        balance: Number(breakdown.balance),
-        transfers: Number(breakdown.transfers),
-        liquidity: Number(breakdown.liquidity),
-        governance: Number(breakdown.governance),
-        total: Number(breakdown.total),
+        balance: Number(userScore.balance),
+        transfers: Number(userScore.transfers),
+        liquidity: Number(userScore.liquidity),
+        governance: Number(userScore.governance),
+        total: Number(userScore.total),
       });
 
       // Check if user shares total publicly
@@ -61,7 +93,7 @@ export const useReputation = () => {
     } finally {
       setLoading(false);
     }
-  }, [isConnected, account, getReputationContract]);
+  }, [isConnected, account, getReputationContract, updateScoreOnBackend]);
 
   const register = useCallback(async () => {
     if (!isConnected) {

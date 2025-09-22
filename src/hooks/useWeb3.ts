@@ -23,7 +23,7 @@ export interface Web3State {
   chainId: number | null;
 }
 
-const REPUTATION_CONTRACT_ADDRESS = '0xfE1C972dd2074BFd3181796dd8eAd154d23861E1';
+const REPUTATION_CONTRACT_ADDRESS = '0x02d281b6152eA6F38b6FdE15676e66bB154c508D';
 const REPUTATION_ABI = [
   {
     "inputs": [
@@ -35,26 +35,6 @@ const REPUTATION_ABI = [
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOracle",
-        "type": "address"
-      }
-    ],
-    "name": "OracleChanged",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "register",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
   },
   {
     "anonymous": false,
@@ -116,19 +96,6 @@ const REPUTATION_ABI = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "_oracle",
-        "type": "address"
-      }
-    ],
-    "name": "setOracle",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
         "name": "user",
         "type": "address"
       },
@@ -161,62 +128,16 @@ const REPUTATION_ABI = [
   {
     "inputs": [
       {
-        "internalType": "bool",
-        "name": "share",
-        "type": "bool"
-      }
-    ],
-    "name": "setShareTotalPublic",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
         "internalType": "address",
         "name": "user",
         "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "share",
-        "type": "bool"
       }
     ],
-    "name": "ShareTotalToggled",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "getMyBreakdown",
+    "name": "getTotal",
     "outputs": [
       {
         "internalType": "uint64",
-        "name": "balance",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint64",
-        "name": "transfers",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint64",
-        "name": "liquidity",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint64",
-        "name": "governance",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint64",
-        "name": "total",
+        "name": "",
         "type": "uint64"
       }
     ],
@@ -227,16 +148,43 @@ const REPUTATION_ABI = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "subject",
+        "name": "user",
         "type": "address"
       }
     ],
-    "name": "getTotal",
+    "name": "getUserScore",
     "outputs": [
       {
-        "internalType": "uint64",
+        "components": [
+          {
+            "internalType": "uint64",
+            "name": "balance",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "transfers",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "liquidity",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "governance",
+            "type": "uint64"
+          },
+          {
+            "internalType": "uint64",
+            "name": "total",
+            "type": "uint64"
+          }
+        ],
+        "internalType": "struct Encrypted.Scores",
         "name": "",
-        "type": "uint64"
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
