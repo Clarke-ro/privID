@@ -32,7 +32,6 @@ export const useReputation = () => {
   }, []);
 
   const fetchReputation = useCallback(async () => {
-    console.log('🟡 FETCH REPUTATION CALLED - isConnected:', isConnected, 'account:', account?.slice(0, 8));
     if (!isConnected || !account) return;
 
     setLoading(true);
@@ -41,10 +40,8 @@ export const useReputation = () => {
       
       // First check if user is registered by checking if they have a total score
       try {
-        console.log('🟡 ATTEMPTING CONTRACT CALL getMyBreakdown...');
         const breakdown = await contract.getMyBreakdown();
         
-        console.log('🟢 CONTRACT CALL SUCCESS - User is registered');
         // If we get here, user is registered
         setReputation({
           balance: Number(breakdown.balance),
@@ -62,7 +59,7 @@ export const useReputation = () => {
       } catch (contractError: any) {
         // If contract call fails with empty data, user is not registered
         if (contractError.code === 'BAD_DATA' && contractError.value === '0x') {
-          console.log('🔵 User not registered in reputation contract');
+          console.log('User not registered in reputation contract');
           setIsRegistered(false);
           setReputation(null);
           setIsPublic(false);
@@ -82,13 +79,11 @@ export const useReputation = () => {
   }, [isConnected, account, getReputationContract]);
 
   const register = useCallback(async () => {
-    console.log('🔴 REGISTER CALLED - isConnected:', isConnected);
     if (!isConnected) {
       toast.error('Please connect your wallet first');
       return;
     }
 
-    console.log('🔴 REGISTER EXECUTING - Starting registration...');
     setRegistering(true);
     try {
       const contract = getReputationContract();
@@ -135,7 +130,6 @@ export const useReputation = () => {
   }, [isConnected, isPublic, getReputationContract]);
 
   useEffect(() => {
-    console.log('🟠 USEEFFECT TRIGGERED - isConnected:', isConnected, 'account:', account?.slice(0, 8));
     if (isConnected && account) {
       fetchReputation();
     } else {
