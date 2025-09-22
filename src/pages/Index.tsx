@@ -8,6 +8,7 @@ import { ReputationChart } from '@/components/web3/ReputationChart';
 import { ActivityFeed } from '@/components/web3/ActivityFeed';
 import { UserProfileCard } from '@/components/web3/UserProfileCard';
 import { MilestoneAchievements } from '@/components/web3/MilestoneAchievements';
+import { FirstTimeUserModal } from '@/components/profile/FirstTimeUserModal';
 import { useReputation } from '@/hooks/useReputation';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -39,7 +40,9 @@ const Index = () => {
     const blurMax = window.innerHeight * heroHeight / 100;
     const blurAmount = Math.min(Math.max((scrollY - blurStart) / (blurMax - blurStart), 0), 1) * 8;
     const overlayOpacity = Math.min(Math.max(scrollY / blurMax, 0), 0.8);
-    return <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
+        <FirstTimeUserModal />
+        
         {/* Hero Background */}
         <div className="fixed top-0 left-0 w-full h-screen bg-cover bg-center z-0" style={{
         backgroundImage: `url(${backgroundImage})`,
@@ -93,6 +96,7 @@ const Index = () => {
   }
   return <SidebarProvider>
       <div className="min-h-screen flex w-full">
+        <FirstTimeUserModal />
         <AppSidebar />
         
         <div className="flex-1 flex flex-col">
