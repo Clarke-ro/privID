@@ -87,7 +87,6 @@ export const AirdropTable = () => {
               <TableHead>Eligible</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Last</TableHead>
-              <TableHead>Last Modified</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -130,9 +129,6 @@ export const AirdropTable = () => {
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">
                   {airdrop.lastInteraction}
-                </TableCell>
-                <TableCell className="text-sm text-muted-foreground">
-                  {airdrop.lastModified}
                 </TableCell>
               </TableRow>
             ))}
