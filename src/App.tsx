@@ -16,6 +16,13 @@ import Explore from "./pages/Explore";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import Leaderboard from "./pages/Leaderboard";
+import Portfolio from "./pages/Portfolio";
+import Post from "./pages/Post";
+import Job from "./pages/Job";
+import Connections from "./pages/Connections";
+import Airdrop from "./pages/Airdrop";
+import Calendar from "./pages/Calendar";
+import ID from "./pages/ID";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -102,6 +109,41 @@ const AppContent = () => {
         <Route path="/leaderboard" element={
           <RouteGuard requiredAuth="wallet">
             <Leaderboard />
+          </RouteGuard>
+        } />
+        <Route path="/portfolio" element={
+          <RouteGuard requiredAuth="wallet">
+            <Portfolio />
+          </RouteGuard>
+        } />
+        <Route path="/post" element={
+          <RouteGuard requiredAuth="wallet">
+            <Post />
+          </RouteGuard>
+        } />
+        <Route path="/job" element={
+          <RouteGuard requiredAuth="wallet">
+            <Job />
+          </RouteGuard>
+        } />
+        <Route path="/connections" element={
+          <RouteGuard requiredAuth="wallet">
+            <Connections />
+          </RouteGuard>
+        } />
+        <Route path="/airdrop" element={
+          <RouteGuard requiredAuth="wallet">
+            <Airdrop />
+          </RouteGuard>
+        } />
+        <Route path="/calendar" element={
+          <RouteGuard requiredAuth="wallet">
+            <Calendar />
+          </RouteGuard>
+        } />
+        <Route path="/id" element={
+          <RouteGuard requiredAuth="wallet">
+            <ID />
           </RouteGuard>
         } />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
