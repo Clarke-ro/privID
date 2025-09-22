@@ -49,14 +49,9 @@ export const HorizontalTabs = () => {
   const isActiveTab = (path: string) => {
     return location.pathname === path;
   };
-  return <div style={{
-    backgroundColor: 'hsl(var(--tabs-bg))'
-  }} className="backdrop-blur-sm border border-border rounded-lg mx-6 my-4 p-2 bg-slate-950">
-      <div className="flex gap-1 overflow-x-auto">
-        {tabs.map(tab => <Button key={tab.id} variant="ghost" size="sm" onClick={() => handleTabClick(tab.path)} className={cn("px-6 py-2 text-sm font-medium whitespace-nowrap rounded-lg transition-all", isActiveTab(tab.path) ? "text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")} style={{
-        backgroundColor: isActiveTab(tab.path) ? 'hsl(var(--tab-active))' : 'hsl(var(--tab-inactive))',
-        color: isActiveTab(tab.path) ? 'hsl(var(--foreground))' : undefined
-      }}>
+  return <div className="bg-black rounded-lg mx-6 my-4 p-3">
+      <div className="flex gap-2 overflow-x-auto">
+        {tabs.map(tab => <Button key={tab.id} variant="ghost" size="sm" onClick={() => handleTabClick(tab.path)} className={cn("px-6 py-2 text-sm font-medium whitespace-nowrap rounded-lg transition-all", isActiveTab(tab.path) ? "bg-[#a5dff9] text-black shadow-sm" : "bg-white text-black hover:bg-gray-50")}>
             {tab.label}
           </Button>)}
       </div>
