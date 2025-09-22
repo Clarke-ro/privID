@@ -10,19 +10,15 @@ import QRCode from 'qrcode';
 import { useEffect, useState } from 'react';
 
 export const IDCard = () => {
-  const { account, isConnected } = useWeb3();
+  const { account } = useWeb3();
   const { profile } = useUserProfile();
-  const { reputation, isRegistered } = useReputation();
+  const { reputation } = useReputation();
   const [qrCodeUrl, setQrCodeUrl] = useState('');
   
-  // Use real data when available, fallback for demo/disconnected state
+  // Mock account for demo purposes when no wallet is connected
   const demoAccount = account || '0x1234567890123456789012345678901234567890';
   const demoName = profile.name || 'Demo User';
-  
-  // Show actual reputation if registered and connected, otherwise show demo data
-  const displayScore = isConnected && isRegistered && reputation?.total 
-    ? reputation.total 
-    : (isConnected ? 0 : 1589652); // Show 0 if connected but not registered, demo data if disconnected
+  const displayScore = reputation?.total || 1589652;
   
   // Determine reputation tier
   const reputationType = displayScore >= 1000000 ? 'GOLDEN' : 'SILVER';

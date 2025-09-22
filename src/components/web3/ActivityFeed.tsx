@@ -17,78 +17,84 @@ interface ActivityItem {
 
 export const ActivityFeed = () => {
   const { reputation, badge } = useReputation();
-  const { account } = useWeb3();
+  const { account, getReputationContract } = useWeb3();
   const [activities, setActivities] = useState<ActivityItem[]>([]);
 
   useEffect(() => {
     if (!account) return;
 
-    // Create activity items based on current reputation data without contract calls
-    const loadRecentActivity = () => {
-      const activityItems: ActivityItem[] = [];
+    const loadRecentActivity = async () => {
+      try {
+        const contract = getReputationContract();
+        
+        // Listen for ScoreUpdated events
+        const filter = contract.filters.ScoreUpdated(account);
+        const events = await contract.queryFilter(filter, -1000); // Last 1000 blocks
+        
+        const activityItems: ActivityItem[] = [];
 
-      // Add badge achievement based on current score
-      if (badge && badge.type !== 'none') {
-        activityItems.push({
-          id: `badge-${badge.type}`,
-          type: 'badge_earned',
-          title: 'Badge Earned!',
-          description: `Achieved ${badge.name} status`,
-          timestamp: 'Recently',
-          badge: badge.name
-        });
+        // Add reputation updates from events
+        for (const event of events.slice(-5)) { // Last 5 events
+          if ('args' in event && event.args) {
+            activityItems.push({
+              id: `score-${event.blockNumber}`,
+              type: 'score_update',
+              title: 'Reputation Updated',
+              description: `Total score: ${event.args.total.toString()}`,
+              timestamp: 'Recently',
+              points: Number(event.args.total)
+            });
+          }
+        }
+
+        // Add registration event if user is registered
+        if (reputation) {
+          const regFilter = contract.filters.Registered(account);
+          const regEvents = await contract.queryFilter(regFilter, -1000);
+          
+          if (regEvents.length > 0) {
+            activityItems.unshift({
+              id: 'registration',
+              type: 'milestone',
+              title: 'Reputation System Joined',
+              description: 'Successfully registered for reputation tracking',
+              timestamp: 'Past',
+              points: 100
+            });
+          }
+        }
+
+        // Add badge achievement based on current score
+        if (badge && badge.type !== 'none') {
+          activityItems.unshift({
+            id: `badge-${badge.type}`,
+            type: 'badge_earned',
+            title: 'Badge Earned!',
+            description: `Achieved ${badge.name} status`,
+            timestamp: 'Recently',
+            badge: badge.name
+          });
+        }
+
+        setActivities(activityItems);
+      } catch (error) {
+        console.error('Failed to load activity:', error);
+        // Fallback to basic activity if available
+        if (reputation) {
+          setActivities([{
+            id: 'current-score',
+            type: 'score_update',
+            title: 'Current Reputation',
+            description: `Total score: ${reputation.total}`,
+            timestamp: 'Now',
+            points: reputation.total
+          }]);
+        }
       }
-
-      // Add current reputation activity
-      if (reputation && reputation.total > 0) {
-        activityItems.push({
-          id: 'current-score',
-          type: 'score_update',
-          title: 'Reputation Updated',
-          description: `Total score: ${reputation.total.toLocaleString()} points`,
-          timestamp: 'Recently',
-          points: reputation.total
-        });
-
-        // Add registration milestone
-        activityItems.push({
-          id: 'registration',
-          type: 'milestone',
-          title: 'Reputation System Joined',
-          description: 'Successfully registered for reputation tracking',
-          timestamp: 'Past',
-          points: 100
-        });
-      }
-
-      // Add component-based activities if they exist
-      if (reputation?.balance && reputation.balance > 0) {
-        activityItems.push({
-          id: 'balance-activity',
-          type: 'participation',
-          title: 'Balance Activity',
-          description: `Balance reputation: ${reputation.balance.toLocaleString()} points`,
-          timestamp: 'Past',
-          points: reputation.balance
-        });
-      }
-
-      if (reputation?.transfers && reputation.transfers > 0) {
-        activityItems.push({
-          id: 'transfer-activity', 
-          type: 'participation',
-          title: 'Transfer Activity',
-          description: `Transfer reputation: ${reputation.transfers.toLocaleString()} points`,
-          timestamp: 'Past',
-          points: reputation.transfers
-        });
-      }
-
-      setActivities(activityItems.slice(0, 5)); // Show latest 5
     };
 
     loadRecentActivity();
-  }, [account, reputation, badge]);
+  }, [account, reputation, badge, getReputationContract]);
 
   const getIcon = (type: string) => {
     switch (type) {

@@ -16,13 +16,12 @@ export const WalletButton = () => {
   if (isConnected && account) {
     return (
       <div className="flex items-center gap-2">
-        <div className="flex items-center gap-2 px-3 py-2 bg-gradient-card rounded-lg border border-border">
+        <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-gradient-card rounded-lg border border-border">
           <div className="w-2 h-2 bg-web3-orange rounded-full animate-pulse" />
           <span className="text-sm font-mono">{formatAddress(account)}</span>
         </div>
-        <Button variant="outline" size="sm" onClick={disconnectWallet} title="Disconnect Wallet">
+        <Button variant="outline" size="sm" onClick={disconnectWallet}>
           <LogOut className="w-4 h-4" />
-          <span className="hidden md:inline ml-2">Disconnect</span>
         </Button>
       </div>
     );
