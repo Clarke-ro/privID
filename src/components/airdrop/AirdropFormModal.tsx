@@ -11,23 +11,36 @@ import { useToast } from '@/hooks/use-toast';
 interface AirdropFormModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onAddAirdrop: (airdropData: {
+    name: string;
+    url: string;
+    type: 'NFT' | 'Game' | 'Tool' | 'DeFi' | 'Infrastructure';
+    eligibility: 'eligible' | 'ineligible' | 'unknown';
+    datePeriod: string;
+  }) => void;
 }
 
-export const AirdropFormModal = ({ open, onOpenChange }: AirdropFormModalProps) => {
+export const AirdropFormModal = ({ open, onOpenChange, onAddAirdrop }: AirdropFormModalProps) => {
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
     url: '',
     type: '',
     description: '',
-    category: ''
+    eligibility: 'unknown' as 'eligible' | 'ineligible' | 'unknown',
+    datePeriod: ''
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Here you would typically add the airdrop to your state/database
-    console.log('Adding new airdrop:', formData);
+    onAddAirdrop({
+      name: formData.name,
+      url: formData.url,
+      type: formData.type as 'NFT' | 'Game' | 'Tool' | 'DeFi' | 'Infrastructure',
+      eligibility: formData.eligibility,
+      datePeriod: formData.datePeriod
+    });
     
     toast({
       title: "Airdrop Added",
@@ -40,7 +53,8 @@ export const AirdropFormModal = ({ open, onOpenChange }: AirdropFormModalProps) 
       url: '',
       type: '',
       description: '',
-      category: ''
+      eligibility: 'unknown',
+      datePeriod: ''
     });
     onOpenChange(false);
   };
@@ -101,10 +115,10 @@ export const AirdropFormModal = ({ open, onOpenChange }: AirdropFormModalProps) 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category">Category</Label>
-              <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+              <Label htmlFor="eligibility">Eligibility Status</Label>
+              <Select value={formData.eligibility} onValueChange={(value) => handleInputChange('eligibility', value)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder="Select eligibility" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="eligible">Eligible</SelectItem>
@@ -113,6 +127,17 @@ export const AirdropFormModal = ({ open, onOpenChange }: AirdropFormModalProps) 
                 </SelectContent>
               </Select>
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="datePeriod">Date Period</Label>
+            <Input
+              id="datePeriod"
+              placeholder="e.g. 2024-01-01 to 2024-12-31"
+              value={formData.datePeriod}
+              onChange={(e) => handleInputChange('datePeriod', e.target.value)}
+              required
+            />
           </div>
 
           <div className="space-y-2">

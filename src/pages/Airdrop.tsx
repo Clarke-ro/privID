@@ -12,9 +12,11 @@ import { AirdropTable } from '@/components/airdrop/AirdropTable';
 import { AirdropAnalytics } from '@/components/airdrop/AirdropAnalytics';
 import { AirdropFormModal } from '@/components/airdrop/AirdropFormModal';
 import { useState } from 'react';
+import { useAirdrops } from '@/hooks/useAirdrops';
 
 const Airdrop = () => {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const { airdrops, addAirdrop, updateEligibility } = useAirdrops();
 
   return (
     <SidebarProvider>
@@ -53,7 +55,10 @@ const Airdrop = () => {
                   <AirdropCategoriesFilter />
                   
                   {/* Airdrops Table */}
-                  <AirdropTable />
+                  <AirdropTable 
+                    airdrops={airdrops}
+                    onUpdateEligibility={updateEligibility}
+                  />
                 </div>
                 
                 {/* Right Analytics */}
@@ -67,7 +72,8 @@ const Airdrop = () => {
       {/* Add Airdrop Modal */}
       <AirdropFormModal 
         open={isFormModalOpen} 
-        onOpenChange={setIsFormModalOpen} 
+        onOpenChange={setIsFormModalOpen}
+        onAddAirdrop={addAirdrop}
       />
     </SidebarProvider>
   );
