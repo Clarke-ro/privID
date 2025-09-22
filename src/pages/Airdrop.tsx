@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { AirdropSidebar } from '@/components/airdrop/AirdropSidebar';
 import { AirdropStatusCards } from '@/components/airdrop/AirdropStatusCards';
-import { AirdropCategoriesFilter } from '@/components/airdrop/AirdropCategoriesFilter';
 import { AirdropTable } from '@/components/airdrop/AirdropTable';
 import { AirdropAnalytics } from '@/components/airdrop/AirdropAnalytics';
 import { AirdropFormModal } from '@/components/airdrop/AirdropFormModal';
@@ -57,9 +56,6 @@ const Airdrop = () => {
                   
                   {/* Status Cards */}
                   <AirdropStatusCards counts={counts} />
-                  
-                  {/* Categories Filter */}
-                  <AirdropCategoriesFilter />
                   
                   {/* Airdrops Table */}
                   <AirdropTable 
