@@ -68,6 +68,36 @@ export const useAirdrops = () => {
     }
   ]);
 
+  const [activities, setActivities] = useState<any[]>([]);
+
+  const addActivity = (action: string, target: string) => {
+    const getIconName = (action: string) => {
+      if (action.includes('Added')) return 'Plus';
+      if (action.includes('eligible')) return 'CheckCircle';
+      if (action.includes('ineligible')) return 'XCircle';
+      if (action.includes('unknown')) return 'Clock';
+      return 'Trash2';
+    };
+
+    const getIconColor = (action: string) => {
+      if (action.includes('Added')) return 'bg-blue-500';
+      if (action.includes('eligible')) return 'bg-green-500';
+      if (action.includes('ineligible')) return 'bg-red-500';
+      if (action.includes('unknown')) return 'bg-yellow-500';
+      return 'bg-red-500';
+    };
+
+    const newActivity = {
+      id: Date.now().toString(),
+      action,
+      target,
+      time: 'Just now',
+      iconName: getIconName(action),
+      iconColor: getIconColor(action)
+    };
+    setActivities(prev => [newActivity, ...prev.slice(0, 4)]);
+  };
+
   const addAirdrop = (airdropData: Omit<AirdropItem, 'id' | 'dateAdded'>) => {
     const newAirdrop: AirdropItem = {
       ...airdropData,
@@ -79,18 +109,27 @@ export const useAirdrops = () => {
       })
     };
     setAirdrops(prev => [newAirdrop, ...prev]);
+    addActivity('Added airdrop', airdropData.name);
   };
 
   const updateEligibility = (id: string, eligibility: AirdropItem['eligibility']) => {
-    setAirdrops(prev => 
-      prev.map(airdrop => 
-        airdrop.id === id ? { ...airdrop, eligibility } : airdrop
-      )
-    );
+    const airdrop = airdrops.find(a => a.id === id);
+    if (airdrop) {
+      setAirdrops(prev => 
+        prev.map(airdrop => 
+          airdrop.id === id ? { ...airdrop, eligibility } : airdrop
+        )
+      );
+      addActivity(`Changed status to ${eligibility}`, airdrop.name);
+    }
   };
 
   const deleteAirdrop = (id: string) => {
-    setAirdrops(prev => prev.filter(airdrop => airdrop.id !== id));
+    const airdrop = airdrops.find(a => a.id === id);
+    if (airdrop) {
+      setAirdrops(prev => prev.filter(airdrop => airdrop.id !== id));
+      addActivity('Deleted airdrop', airdrop.name);
+    }
   };
 
   // Calculate counts
@@ -126,6 +165,7 @@ export const useAirdrops = () => {
     updateEligibility,
     deleteAirdrop,
     counts,
-    getFilteredAirdrops
+    getFilteredAirdrops,
+    activities
   };
 };

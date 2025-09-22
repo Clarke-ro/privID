@@ -16,7 +16,7 @@ import { useAirdrops } from '@/hooks/useAirdrops';
 const Airdrop = () => {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('all');
-  const { airdrops, addAirdrop, updateEligibility, deleteAirdrop, counts, getFilteredAirdrops } = useAirdrops();
+  const { airdrops, addAirdrop, updateEligibility, deleteAirdrop, counts, getFilteredAirdrops, activities } = useAirdrops();
 
   const filteredAirdrops = getFilteredAirdrops(selectedFilter);
 
@@ -66,7 +66,7 @@ const Airdrop = () => {
                 </div>
                 
                 {/* Right Analytics */}
-                <AirdropAnalytics counts={counts} />
+                <AirdropAnalytics counts={counts} activities={activities} />
               </div>
             </div>
           </main>

@@ -2,14 +2,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { TrendingUp, Users, FileText, Download, Trash2 } from 'lucide-react';
+import { TrendingUp, Users, FileText, Download, Trash2, Plus, CheckCircle, XCircle, Clock } from 'lucide-react';
 
 interface ActivityItem {
   id: string;
   action: string;
   target: string;
   time: string;
-  icon: React.ReactNode;
+  iconName: string;
   iconColor: string;
 }
 
@@ -20,52 +20,66 @@ interface AirdropAnalyticsProps {
     ineligible: number;
     unknown: number;
   };
+  activities: ActivityItem[];
 }
 
-export const AirdropAnalytics = ({ counts }: AirdropAnalyticsProps) => {
+export const AirdropAnalytics = ({ counts, activities }: AirdropAnalyticsProps) => {
 
-  const activities: ActivityItem[] = [
+  const defaultActivities: ActivityItem[] = [
     {
       id: '1',
-      action: 'You have created',
-      target: 'Puck-Video',
-      time: '8 days ago',
-      icon: <FileText className="w-3 h-3" />,
+      action: 'Added airdrop',
+      target: 'LearnUIto',
+      time: 'Just now',
+      iconName: 'Plus',
       iconColor: 'bg-blue-500'
     },
     {
       id: '2',
-      action: 'You have collected',
-      target: 'App img',
-      time: '8 days ago',
-      icon: <Download className="w-3 h-3" />,
+      action: 'Changed status to eligible',
+      target: 'Design-Pictures',
+      time: '2 hours ago',
+      iconName: 'CheckCircle',
       iconColor: 'bg-green-500'
     },
     {
       id: '3',
-      action: 'You have created',
-      target: 'Tutorial Video2',
-      time: '8 days ago',
-      icon: <FileText className="w-3 h-3" />,
-      iconColor: 'bg-blue-500'
+      action: 'Changed status to ineligible',
+      target: 'Node.js pdf',
+      time: '1 day ago',
+      iconName: 'XCircle',
+      iconColor: 'bg-red-500'
     },
     {
       id: '4',
-      action: 'You have deleted',
-      target: 'doc.pdf',
-      time: '8 days ago',
-      icon: <Trash2 className="w-3 h-3" />,
+      action: 'Deleted airdrop',
+      target: 'Old Protocol',
+      time: '2 days ago',
+      iconName: 'Trash2',
       iconColor: 'bg-red-500'
     },
     {
       id: '5',
-      action: 'You have deleted',
-      target: 'doc.pdf',
-      time: '8 days ago',
-      icon: <Trash2 className="w-3 h-3" />,
-      iconColor: 'bg-red-500'
+      action: 'Added airdrop',
+      target: 'DeFi Protocol Alpha',
+      time: '3 days ago',
+      iconName: 'Plus',
+      iconColor: 'bg-blue-500'
     }
   ];
+
+  const displayActivities = activities.length > 0 ? activities : defaultActivities;
+
+  const getIconComponent = (iconName: string) => {
+    switch (iconName) {
+      case 'Plus': return <Plus className="w-3 h-3" />;
+      case 'CheckCircle': return <CheckCircle className="w-3 h-3" />;
+      case 'XCircle': return <XCircle className="w-3 h-3" />;
+      case 'Clock': return <Clock className="w-3 h-3" />;
+      case 'Trash2': return <Trash2 className="w-3 h-3" />;
+      default: return <Plus className="w-3 h-3" />;
+    }
+  };
 
   return (
     <div className="w-80 space-y-6">
@@ -138,10 +152,10 @@ export const AirdropAnalytics = ({ counts }: AirdropAnalyticsProps) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {activities.map((activity) => (
+            {displayActivities.map((activity) => (
               <div key={activity.id} className="flex items-start gap-3">
                 <div className={`w-6 h-6 rounded-full ${activity.iconColor} flex items-center justify-center text-white flex-shrink-0`}>
-                  {activity.icon}
+                  {getIconComponent(activity.iconName)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm">
