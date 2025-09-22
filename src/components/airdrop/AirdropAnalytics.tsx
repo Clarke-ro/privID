@@ -20,10 +20,10 @@ interface AirdropAnalyticsProps {
     ineligible: number;
     unknown: number;
   };
-  activities: ActivityItem[];
+  activities?: ActivityItem[];
 }
 
-export const AirdropAnalytics = ({ counts, activities }: AirdropAnalyticsProps) => {
+export const AirdropAnalytics = ({ counts, activities = [] }: AirdropAnalyticsProps) => {
 
   const defaultActivities: ActivityItem[] = [
     {
@@ -68,7 +68,7 @@ export const AirdropAnalytics = ({ counts, activities }: AirdropAnalyticsProps) 
     }
   ];
 
-  const displayActivities = activities.length > 0 ? activities : defaultActivities;
+  const displayActivities = (activities && activities.length > 0) ? activities : defaultActivities;
 
   const getIconComponent = (iconName: string) => {
     switch (iconName) {
