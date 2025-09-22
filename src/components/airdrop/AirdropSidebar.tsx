@@ -8,7 +8,8 @@ import {
   Heart, 
   Trash2, 
   Settings,
-  Sparkles
+  Sparkles,
+  Clock
 } from 'lucide-react';
 
 interface SidebarItem {
@@ -26,45 +27,59 @@ interface AirdropSidebarProps {
     ineligible: number;
     unknown: number;
   };
+  selectedFilter: string;
+  onFilterChange: (filter: string) => void;
 }
 
-export const AirdropSidebar = ({ counts }: AirdropSidebarProps) => {
+export const AirdropSidebar = ({ counts, selectedFilter, onFilterChange }: AirdropSidebarProps) => {
   const sidebarItems: SidebarItem[] = [
     {
-      id: 'my-airdrop',
+      id: 'all',
       label: 'My Airdrop',
       icon: <Target className="w-4 h-4" />,
       count: counts.total,
-      active: true
+      active: selectedFilter === 'all'
     },
     {
       id: 'eligible',
       label: 'Eligible',
       icon: <CheckCircle className="w-4 h-4" />,
-      count: counts.eligible
+      count: counts.eligible,
+      active: selectedFilter === 'eligible'
     },
     {
       id: 'ineligible',
       label: 'Ineligible',
       icon: <XCircle className="w-4 h-4" />,
-      count: counts.ineligible
+      count: counts.ineligible,
+      active: selectedFilter === 'ineligible'
+    },
+    {
+      id: 'unknown',
+      label: 'Unknown',
+      icon: <Clock className="w-4 h-4" />,
+      count: counts.unknown,
+      active: selectedFilter === 'unknown'
     },
     {
       id: 'favorite',
       label: 'Favorite',
       icon: <Heart className="w-4 h-4" />,
-      count: 0
+      count: 0,
+      active: selectedFilter === 'favorite'
     },
     {
       id: 'trash',
       label: 'Trash',
       icon: <Trash2 className="w-4 h-4" />,
-      count: 0
+      count: 0,
+      active: selectedFilter === 'trash'
     },
     {
       id: 'settings',
       label: 'Settings',
-      icon: <Settings className="w-4 h-4" />
+      icon: <Settings className="w-4 h-4" />,
+      active: selectedFilter === 'settings'
     }
   ];
 
@@ -102,10 +117,11 @@ export const AirdropSidebar = ({ counts }: AirdropSidebarProps) => {
                 key={item.id}
                 variant={item.active ? "default" : "ghost"}
                 className="w-full justify-start gap-3 h-10"
+                onClick={() => onFilterChange(item.id)}
               >
                 {item.icon}
                 <span className="flex-1 text-left">{item.label}</span>
-                {item.count && (
+                {item.count !== undefined && (
                   <Badge variant="secondary" className="ml-auto text-xs">
                     {item.count}
                   </Badge>

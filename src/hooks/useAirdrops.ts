@@ -53,9 +53,18 @@ export const useAirdrops = () => {
       name: 'Weekly Report',
       url: 'https://bylayer.level.com',
       type: 'Tool',
-      eligibility: 'ineligible',
+      eligibility: 'unknown',
       datePeriod: '2024-04-01 to 2024-12-01',
       dateAdded: '25 May 2023'
+    },
+    {
+      id: '6',
+      name: 'DeFi Protocol Alpha',
+      url: 'https://defi-alpha.com',
+      type: 'DeFi',
+      eligibility: 'unknown',
+      datePeriod: '2024-06-01 to 2024-12-15',
+      dateAdded: '15 Jun 2024'
     }
   ]);
 
@@ -95,11 +104,28 @@ export const useAirdrops = () => {
     yetToInteract: airdrops.filter(a => a.eligibility === 'unknown').length
   };
 
+  // Filter airdrops based on selected filter
+  const getFilteredAirdrops = (filter: string) => {
+    switch (filter) {
+      case 'all':
+        return airdrops;
+      case 'eligible':
+        return airdrops.filter(a => a.eligibility === 'eligible');
+      case 'ineligible':
+        return airdrops.filter(a => a.eligibility === 'ineligible');
+      case 'unknown':
+        return airdrops.filter(a => a.eligibility === 'unknown');
+      default:
+        return airdrops;
+    }
+  };
+
   return {
     airdrops,
     addAirdrop,
     updateEligibility,
     deleteAirdrop,
-    counts
+    counts,
+    getFilteredAirdrops
   };
 };
