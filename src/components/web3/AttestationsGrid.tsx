@@ -1,4 +1,5 @@
 import { AttestationCard } from './AttestationCard';
+import { ReputationCard } from './ReputationCard';
 import { toast } from 'sonner';
 
 interface Attestation {
@@ -51,11 +52,9 @@ export const AttestationsGrid = () => {
           onLink={() => handleLinkAttestation(attestations[4].id, attestations[4].title)}
         />
         
-        {/* Central ID Card spanning 2 columns */}
-        <div className="col-span-2 bg-gradient-to-br from-yellow-400 via-yellow-500 to-yellow-600 rounded-lg p-8 text-center text-black shadow-lg flex flex-col justify-center min-h-[128px]">
-          <h2 className="text-2xl font-bold mb-2">Your ID</h2>
-          <p className="text-lg font-medium mb-1">Linked Identity</p>
-          <p className="text-sm opacity-80">Verified across dApps</p>
+        {/* Central ReputationCard spanning 2 columns */}
+        <div className="col-span-2">
+          <ReputationCard />
         </div>
         
         <AttestationCard
