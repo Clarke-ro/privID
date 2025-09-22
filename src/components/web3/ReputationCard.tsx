@@ -18,17 +18,16 @@ export const ReputationCard = () => {
   const { profile } = useUserProfile();
   const [qrCodeUrl, setQrCodeUrl] = useState('');
 
-  // Generate QR code for the wallet address
+  // Generate QR code for the wallet address  
   useEffect(() => {
-    if (account) {
-      QRCode.toDataURL(account, { 
-        width: 120,
-        margin: 1,
-        color: { dark: '#000000', light: '#FFD700' }
-      })
-      .then(url => setQrCodeUrl(url))
-      .catch(err => console.error('QR Code generation failed:', err));
-    }
+    const addressToUse = account || '0x1234567890123456789012345678901234567890';
+    QRCode.toDataURL(addressToUse, { 
+      width: 120,
+      margin: 1,
+      color: { dark: '#000000', light: '#FFD700' }
+    })
+    .then(url => setQrCodeUrl(url))
+    .catch(err => console.error('QR Code generation failed:', err));
   }, [account]);
 
   const downloadCard = async () => {
@@ -63,24 +62,25 @@ export const ReputationCard = () => {
     }
   };
 
-  const formatAddress = (address: string) => {
+  // Mock reputation score for display (since smart contract is failing)
+  const displayScore = reputation?.total || 1589652;
+  
+  // Mock account for demo purposes when no wallet is connected
+  const demoAccount = account || '0x1234567890123456789012345678901234567890';
+  const demoName = profile.name || 'Demo User';
+  const demoAvatar = profile.avatar || '';
+
+  const formatDisplayAddress = (address: string) => {
     return `${address.slice(0, 8)}...${address.slice(-6)}`;
   };
 
   const getDisplayName = () => {
-    return profile.name || 'Anonymous User';
+    return demoName;
   };
 
   const getDisplayEmail = () => {
-    return `${formatAddress(account || '')}@ten.xyz`;
+    return `${formatDisplayAddress(demoAccount)}@ten.xyz`;
   };
-
-  // Mock reputation score for display (since smart contract is failing)
-  const displayScore = reputation?.total || 1589652;
-
-  if (!account) {
-    return null;
-  }
 
   return (
     <Card className="bg-gradient-card border-border shadow-card max-w-4xl mx-auto">
@@ -130,7 +130,7 @@ export const ReputationCard = () => {
                   <CheckCircle2 className="w-5 h-5 text-blue-600" />
                 </div>
                 <p className="text-sm text-black/70 font-mono">
-                  {formatAddress(account)}
+                  {formatDisplayAddress(demoAccount)}
                 </p>
               </div>
             </div>
