@@ -1,6 +1,4 @@
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/layout/Sidebar';
-import { Header } from '@/components/layout/Header';
+import { HorizontalNavigation } from '@/components/layout/HorizontalNavigation';
 import { ReputationCard } from '@/components/web3/ReputationCard';
 import { ReputationChart } from '@/components/web3/ReputationChart';
 import { ActivityFeed } from '@/components/web3/ActivityFeed';
@@ -89,45 +87,61 @@ const Index = () => {
         </div>
       </div>;
   }
-  return <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
-        
-        <div className="flex-1 flex flex-col">
-          <Header />
-          
-          <main className="flex-1 p-6">
-            <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-                <p className="text-muted-foreground">
-                  Monitor your encrypted reputation and Web3 activity
-                </p>
-              </div>
+  return (
+    <div className="min-h-screen bg-gradient-dashboard">
+      <HorizontalNavigation />
+      
+      <main className="container mx-auto px-6 py-8">
+        <div className="space-y-8">
+          {/* Header Section */}
+          <div className="text-center space-y-4">
+            <h1 className="text-4xl font-bold text-foreground">
+              Encrypted Reputation Dashboard
+            </h1>
+            <p className="text-lg text-muted-foreground">
+              Monitor your Web3 reputation and achievements privately on TEN Testnet
+            </p>
+          </div>
 
-              <div className="grid lg:grid-cols-3 gap-6">
-                <div className="space-y-6">
-                  <UserProfileCard />
-                </div>
-                <div className="space-y-6">
-                  <ReputationChart />
-                </div>
-                <div className="space-y-6">
-                  <ActivityFeed />
-                </div>
-              </div>
-
-              <div className="mt-6">
-                <MilestoneAchievements />
-              </div>
-
-              {reputation && <div className="mt-6">
-                  <ReputationCard />
-                </div>}
+          {/* Main Dashboard Grid */}
+          <div className="grid lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-1 space-y-6">
+              <UserProfileCard />
             </div>
-          </main>
+            <div className="lg:col-span-1 space-y-6">
+              <ReputationChart />
+            </div>
+            <div className="lg:col-span-1 space-y-6">
+              <ActivityFeed />
+            </div>
+          </div>
+
+          {/* Achievements Section */}
+          <div className="space-y-6">
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-foreground mb-2">Milestone Achievements</h2>
+              <p className="text-muted-foreground">Track your progress and unlock new badges</p>
+            </div>
+            <MilestoneAchievements />
+          </div>
+
+          {/* Reputation Card */}
+          {reputation && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="text-2xl font-bold text-foreground mb-2">Your Reputation ID</h2>
+                <p className="text-muted-foreground">Your unique encrypted reputation identifier</p>
+              </div>
+              <div className="flex justify-center">
+                <div className="w-full max-w-md">
+                  <ReputationCard />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
-    </SidebarProvider>;
+      </main>
+    </div>
+  );
 };
 export default Index;
