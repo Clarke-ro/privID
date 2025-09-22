@@ -48,7 +48,7 @@ export const WelcomeSection = () => {
             </p>
             <Button 
               variant="outline" 
-              onClick={() => window.open('https://gateway.ten.xyz/', '_blank')}
+              onClick={() => window.open('https://testnet.ten.xyz', '_blank')}
             >
               Visit TEN Gateway
             </Button>

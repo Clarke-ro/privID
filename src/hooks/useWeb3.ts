@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 // TEN Testnet configuration
 const TEN_TESTNET_CONFIG = {
-  chainId: '0x1BB', // 443 in hex
+  chainId: '0x20FB', // 8443 in hex
   chainName: 'TEN Testnet',
   nativeCurrency: {
     name: 'ETH',
