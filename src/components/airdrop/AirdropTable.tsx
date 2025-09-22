@@ -82,7 +82,7 @@ export const AirdropTable = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Location</TableHead>
+              <TableHead>Airdrop URL</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>Eligible</TableHead>
               <TableHead>Type</TableHead>
