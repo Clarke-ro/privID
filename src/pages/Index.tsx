@@ -8,6 +8,7 @@ import { ReputationChart } from '@/components/web3/ReputationChart';
 import { ActivityFeed } from '@/components/web3/ActivityFeed';
 import { UserProfileCard } from '@/components/web3/UserProfileCard';
 import { MilestoneAchievements } from '@/components/web3/MilestoneAchievements';
+import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard';
 import { FirstTimeUserModal } from '@/components/profile/FirstTimeUserModal';
 import { useReputation } from '@/hooks/useReputation';
 import { useUserProfile } from '@/hooks/useUserProfile';
@@ -71,13 +72,21 @@ const Index = () => {
               <UserProfileCard />
               
               <div>
-                <h2 className="text-xl font-semibold mb-4">Analytics</h2>
-                <ReputationChart />
+                <h2 className="text-xl font-semibold mb-4 bg-gradient-web3 bg-clip-text text-transparent">
+                  Analytics Dashboard
+                </h2>
+                <AnalyticsDashboard />
               </div>
 
-              <div>
-                <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
-                <ActivityFeed />
+              <div className="grid lg:grid-cols-2 gap-6">
+                <div>
+                  <h2 className="text-xl font-semibold mb-4">Reputation Breakdown</h2>
+                  <ReputationChart />
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
+                  <ActivityFeed />
+                </div>
               </div>
 
               <div>
@@ -112,20 +121,30 @@ const Index = () => {
               
               {/* Main Content */}
               <div className="space-y-8">
-                {/* Today's Reputation Increase */}
-                <div className="space-y-4">
+                {/* Analytics Dashboard */}
+                <div className="space-y-6">
                   <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center">
-                      <div className="w-4 h-4 bg-primary rounded-sm"></div>
+                    <div className="w-8 h-8 bg-gradient-web3 rounded-lg flex items-center justify-center">
+                      <div className="w-4 h-4 bg-background rounded-sm"></div>
                     </div>
-                    <h2 className="text-lg font-medium">Today's Reputation Increase</h2>
-                    <div className="text-sm text-muted-foreground ml-auto">Last 7 Days</div>
+                    <h2 className="text-lg font-medium bg-gradient-web3 bg-clip-text text-transparent">
+                      Web3 Reputation Analytics
+                    </h2>
+                    <div className="text-sm text-muted-foreground ml-auto">Real-time Data</div>
                   </div>
                   
-                  <div className="grid lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-1">
-                      <ReputationChart />
-                    </div>
+                  <AnalyticsDashboard />
+                </div>
+
+                {/* Reputation & Activity Grid */}
+                <div className="grid lg:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <h2 className="text-lg font-medium">Reputation Breakdown</h2>
+                    <ReputationChart />
+                  </div>
+                  <div className="space-y-4">
+                    <h2 className="text-lg font-medium">Recent Activity</h2>
+                    <ActivityFeed />
                   </div>
                 </div>
 
@@ -140,15 +159,13 @@ const Index = () => {
                   <MilestoneAchievements />
                 </div>
 
-                {/* Activity Section */}
-                <div className="grid lg:grid-cols-2 gap-6">
-                  <div>
-                    <ActivityFeed />
+                {/* Reputation ID Card */}
+                {reputation && (
+                  <div className="space-y-4">
+                    <h2 className="text-lg font-medium">Reputation ID</h2>
+                    <ReputationCard />
                   </div>
-                  <div>
-                    {reputation && <ReputationCard />}
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </main>

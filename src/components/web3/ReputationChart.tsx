@@ -17,7 +17,7 @@ export const ReputationChart = () => {
   // Don't render chart if no reputation data
   if (!reputation) {
     return (
-      <Card className="bg-gradient-card border-border">
+      <Card className="bg-gradient-card border-border shadow-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-web3-orange" />
@@ -26,7 +26,11 @@ export const ReputationChart = () => {
         </CardHeader>
         <CardContent>
           <div className="text-center text-muted-foreground py-8">
-            Connect wallet and register to view reputation data
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-glow flex items-center justify-center">
+              <TrendingUp className="w-8 h-8 text-web3-orange" />
+            </div>
+            <h3 className="font-medium mb-2">No Reputation Data</h3>
+            <p className="text-sm">Connect wallet and register to view your reputation analytics</p>
           </div>
         </CardContent>
       </Card>
@@ -48,7 +52,7 @@ export const ReputationChart = () => {
   };
 
   return (
-    <Card className="bg-gradient-card border-border">
+    <Card className="bg-gradient-card border-border shadow-card hover:shadow-glow transition-all duration-300">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <TrendingUp className="w-5 h-5 text-web3-orange" />
