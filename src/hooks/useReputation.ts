@@ -26,9 +26,10 @@ export const useReputation = () => {
   const [toggling, setToggling] = useState(false);
 
   const getBadge = useCallback((score: number): BadgeType => {
-    if (score >= 1000) return { type: 'gold', threshold: 1000, name: 'Gold Elite' };
-    if (score >= 500) return { type: 'silver', threshold: 500, name: 'Silver Investor' };
-    if (score >= 100) return { type: 'bronze', threshold: 100, name: 'Bronze Pioneer' };
+    if (score >= 100000000) return { type: 'gold', threshold: 100000000, name: 'Legendary Elite' };
+    if (score >= 10000000) return { type: 'gold', threshold: 10000000, name: 'Gold Elite' };
+    if (score >= 1000000) return { type: 'silver', threshold: 1000000, name: 'Silver Investor' };
+    if (score >= 100000) return { type: 'bronze', threshold: 100000, name: 'Bronze Pioneer' };
     return { type: 'none', threshold: 0, name: 'Unranked' };
   }, []);
 
