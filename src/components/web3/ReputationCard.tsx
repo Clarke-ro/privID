@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react';
 
 export const ReputationCard = () => {
   const { account } = useWeb3();
-  const { reputation, badge, isPublic, togglePublicSharing, toggling } = useReputation();
+  const { reputation, badge, isPublic, togglePublicSharing } = useReputation();
   const { profile } = useUserProfile();
   const { getAttestationHash } = useAttestations();
   const [qrCodeUrl, setQrCodeUrl] = useState('');
@@ -91,14 +91,9 @@ export const ReputationCard = () => {
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-xl font-bold">Golden Reputation ID</CardTitle>
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={togglePublicSharing}
-            disabled={toggling}
-          >
+          <Button variant="outline" size="sm" onClick={togglePublicSharing}>
             {isPublic ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-            {toggling ? 'Updating...' : (isPublic ? 'Public' : 'Private')}
+            {isPublic ? 'Public' : 'Private'}
           </Button>
           <Button variant="outline" size="sm" onClick={downloadCard}>
             <Download className="w-4 h-4" />

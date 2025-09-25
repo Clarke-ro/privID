@@ -181,10 +181,10 @@ export const NationalIDModal = ({ open, onOpenChange }: NationalIDModalProps) =>
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md border-border bg-card text-card-foreground shadow-glow">
+      <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-foreground">
-            <Shield className="h-5 w-5 text-web3-orange" />
+          <DialogTitle className="flex items-center gap-2">
+            <Shield className="h-5 w-5 text-web3-primary" />
             National ID Verification
           </DialogTitle>
         </DialogHeader>

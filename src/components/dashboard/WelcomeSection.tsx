@@ -8,7 +8,6 @@ import { WalletButton } from '@/components/web3/WalletButton';
 export const WelcomeSection = () => {
   const { isConnected } = useWeb3();
   const { isRegistered, register, registering } = useReputation();
-  // Remove the navigate logic since RouteGuard handles it now
 
   if (!isConnected) {
     return (

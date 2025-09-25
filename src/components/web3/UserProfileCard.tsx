@@ -21,23 +21,23 @@ export const UserProfileCard = () => {
   const getBadgeColor = (type: string) => {
     switch (type) {
       case 'gold':
-        return 'bg-badge-gold text-foreground border-badge-gold/30';
+        return 'bg-badge-gold text-black';
       case 'silver':
-        return 'bg-badge-silver text-foreground border-badge-silver/30';
+        return 'bg-badge-silver text-black';
       case 'bronze':
-        return 'bg-badge-bronze text-card border-badge-bronze/30';
+        return 'bg-badge-bronze text-white';
       default:
-        return 'bg-muted text-muted-foreground border-border';
+        return 'bg-muted text-muted-foreground';
     }
   };
 
-  // Use actual reputation data, start at 0 if not available
-  const displayAccount = account || "0x0000...0000";
+  // Show profile even without connection for demo purposes
+  const displayAccount = account || "0x1234...5678";
   const displayReputation = reputation?.total || 0;
   const displayBadge = badge || {
-    type: 'none' as const,
-    threshold: 0,
-    name: 'Unranked'
+    type: 'gold' as const,
+    threshold: 1000,
+    name: 'Gold Elite'
   };
   return <Card className="bg-gradient-card border-border max-w-sm mx-auto">
       <CardContent className="p-6 text-center">
@@ -82,7 +82,7 @@ export const UserProfileCard = () => {
 
         {/* Badge - Center Aligned */}
         <div className="mb-4 flex justify-center">
-          <Badge className={`${getBadgeColor(displayBadge.type)} px-3 py-1.5 text-sm font-semibold border-2`}>
+          <Badge className={`${getBadgeColor(displayBadge.type)} px-3 py-1.5 text-sm font-semibold`}>
             <Award className="w-4 h-4 mr-1" />
             {displayBadge.name}
           </Badge>

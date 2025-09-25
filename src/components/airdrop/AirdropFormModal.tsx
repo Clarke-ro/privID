@@ -68,9 +68,9 @@ export const AirdropFormModal = ({ open, onOpenChange, onAddAirdrop }: AirdropFo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px] border-border bg-card text-card-foreground shadow-glow">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="text-foreground">Add New Airdrop to Track</DialogTitle>
+          <DialogTitle>Add New Airdrop to Track</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">

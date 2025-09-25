@@ -23,42 +23,20 @@ export const useReputation = () => {
   const [isPublic, setIsPublic] = useState(false);
   const [loading, setLoading] = useState(false);
   const [registering, setRegistering] = useState(false);
-  const [toggling, setToggling] = useState(false);
 
   const getBadge = useCallback((score: number): BadgeType => {
-    if (score >= 100000000) return { type: 'gold', threshold: 100000000, name: 'Legendary Elite' };
-    if (score >= 10000000) return { type: 'gold', threshold: 10000000, name: 'Gold Elite' };
-    if (score >= 1000000) return { type: 'silver', threshold: 1000000, name: 'Silver Investor' };
-    if (score >= 100000) return { type: 'bronze', threshold: 100000, name: 'Bronze Pioneer' };
+    if (score >= 1000) return { type: 'gold', threshold: 1000, name: 'Gold Elite' };
+    if (score >= 500) return { type: 'silver', threshold: 500, name: 'Silver Investor' };
+    if (score >= 100) return { type: 'bronze', threshold: 100, name: 'Bronze Pioneer' };
     return { type: 'none', threshold: 0, name: 'Unranked' };
   }, []);
 
   const updateScoreOnBackend = useCallback(async (address: string) => {
-    try {
-      console.log('Sending score update request for address:', address);
-      const response = await fetch('http://localhost:3001/update-score', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ address }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Backend update failed: ${response.status} ${response.statusText}`, errorText);
-        throw new Error(`Backend update failed: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-      console.log('Backend score update successful:', result);
-      return result;
-    } catch (error) {
-      console.error('Backend score update error:', error);
-      // Don't throw error, just log and continue with mock data
-      console.log('Backend unavailable, falling back to mock data');
-      return null;
-    }
+    // Mock backend calculation with demo data
+    console.log('Mock score calculation for address:', address);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate processing time
+    console.log('Mock backend score calculation completed');
+    return true;
   }, []);
 
   const fetchReputation = useCallback(async () => {
@@ -66,59 +44,28 @@ export const useReputation = () => {
 
     setLoading(true);
     try {
-      // Try to update score on backend first
-      console.log('Updating score on backend...');
-      const backendResult = await updateScoreOnBackend(account);
+      // Mock score calculation
+      console.log('Mock score calculation for:', account);
+      await updateScoreOnBackend(account);
       
-      if (backendResult) {
-        // Backend is available, wait for processing and use smart contract data
-        console.log('Backend available, waiting for processing...');
-        await new Promise(resolve => setTimeout(resolve, 3000));
-
-        const contract = getReputationContract();
-        
-        console.log('Reading user score from smart contract...');
-        const userScore = await contract.getUserScore(account);
-        
-        const reputationData = {
-          balance: Number(userScore.balance),
-          transfers: Number(userScore.transfers),
-          liquidity: Number(userScore.liquidity),
-          governance: Number(userScore.governance),
-          total: Number(userScore.total),
-        };
-        
-        console.log('Reputation data from contract:', reputationData);
-        setReputation(reputationData);
-
-        // Check if user shares total publicly
-        try {
-          const isSharedPublic = await contract.shareTotalPublic(account);
-          setIsPublic(isSharedPublic);
-        } catch (error) {
-          console.warn('Could not check public sharing status:', error);
-          setIsPublic(false);
-        }
-        
-        toast.success('Reputation score loaded from blockchain');
-      } else {
-        // Backend unavailable, start with zero scores
-        console.log('Backend unavailable, starting with zero reputation');
-        const initialReputationData = {
-          balance: 0,
-          transfers: 0,
-          liquidity: 0,
-          governance: 0,
-          total: 0,
-        };
-        
-        console.log('Initial reputation data set to zero:', initialReputationData);
-        setReputation(initialReputationData);
-        setIsPublic(false);
-        toast.info('Connect to backend server to update reputation scores');
-      }
+      // Generate mock reputation data
+      const mockReputationData = {
+        balance: 450000 + Math.floor(Math.random() * 100000),
+        transfers: 320000 + Math.floor(Math.random() * 50000),
+        liquidity: 580000 + Math.floor(Math.random() * 80000),
+        governance: 240000 + Math.floor(Math.random() * 40000),
+        total: 0,
+      };
       
+      // Calculate total
+      mockReputationData.total = mockReputationData.balance + mockReputationData.transfers + 
+                                mockReputationData.liquidity + mockReputationData.governance;
+      
+      console.log('Mock reputation data generated:', mockReputationData);
+      setReputation(mockReputationData);
+      setIsPublic(true); // Default to public sharing
       setIsRegistered(true);
+      toast.success('Reputation score loaded successfully');
       
     } catch (error) {
       console.error('Failed to fetch reputation:', error);
@@ -129,7 +76,7 @@ export const useReputation = () => {
     } finally {
       setLoading(false);
     }
-  }, [isConnected, account, getReputationContract, updateScoreOnBackend]);
+  }, [isConnected, account, updateScoreOnBackend]);
 
   const register = useCallback(async () => {
     if (!isConnected) {
@@ -165,33 +112,22 @@ export const useReputation = () => {
       return;
     }
 
-    if (toggling) return; // Prevent multiple simultaneous calls
-
-    setToggling(true);
     try {
       const contract = getReputationContract();
-      const newPublicState = !isPublic;
+      const tx = await contract.setShareTotalPublic(!isPublic);
       
       toast.info('Transaction submitted...', {
-        description: `Making reputation ${newPublicState ? 'public' : 'private'}`
+        description: 'Updating public sharing preference'
       });
-
-      const tx = await contract.setShareTotalPublic(newPublicState);
-      await tx.wait();
       
-      setIsPublic(newPublicState);
-      toast.success(`Reputation is now ${newPublicState ? 'public' : 'private'}!`);
+      await tx.wait();
+      setIsPublic(!isPublic);
+      toast.success(`Reputation is now ${!isPublic ? 'public' : 'private'}`);
     } catch (error) {
       console.error('Failed to toggle public sharing:', error);
-      if (error.code === 'ACTION_REJECTED') {
-        toast.error('Transaction was cancelled');
-      } else {
-        toast.error('Failed to update visibility. Please try again.');
-      }
-    } finally {
-      setToggling(false);
+      toast.error('Failed to update preference. Please try again.');
     }
-  }, [isConnected, isPublic, getReputationContract, toggling]);
+  }, [isConnected, isPublic, getReputationContract]);
 
   useEffect(() => {
     if (isConnected && account) {
@@ -212,7 +148,6 @@ export const useReputation = () => {
     isPublic,
     loading,
     registering,
-    toggling,
     register,
     togglePublicSharing,
     fetchReputation,

@@ -93,14 +93,14 @@ export const FirstTimeUserModal = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent className="max-w-md border-border bg-card text-card-foreground shadow-glow" onPointerDownOutside={(e) => e.preventDefault()}>
+      <DialogContent className="max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader className="text-center">
           <div className="flex justify-center mb-3">
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
               <Sparkles className="w-6 h-6 text-primary" />
             </div>
           </div>
-          <DialogTitle className="text-xl text-foreground">Welcome to Web3 Reputation!</DialogTitle>
+          <DialogTitle className="text-xl">Welcome to Web3 Reputation!</DialogTitle>
           <p className="text-muted-foreground text-sm">
             Let's set up your profile to get started
           </p>
