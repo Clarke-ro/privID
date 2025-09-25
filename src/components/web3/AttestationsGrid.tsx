@@ -1,6 +1,9 @@
 import { AttestationCard } from './AttestationCard';
 import { IDCard } from './IDCard';
+import { NationalIDModal } from '@/components/verification/NationalIDModal';
+import { useState } from 'react';
 import { toast } from 'sonner';
+import useAttestations from '@/hooks/useAttestations';
 
 interface Attestation {
   id: string;
@@ -26,10 +29,24 @@ const attestations: Attestation[] = [
 ];
 
 export const AttestationsGrid = () => {
+  const [nationalIDModalOpen, setNationalIDModalOpen] = useState(false);
+  const { hasAttestation } = useAttestations();
+
   const handleLinkAttestation = (attestationId: string, title: string) => {
+    if (attestationId === 'national-id') {
+      setNationalIDModalOpen(true);
+      return;
+    }
+    
     toast.info(`Linking ${title}...`, {
       description: 'Smart contract integration coming soon'
     });
+  };
+
+  // Update attestation status based on verified attestations
+  const getAttestationStatus = (id: string): 'linked' | 'not-linked' | 'pending' => {
+    if (hasAttestation(id)) return 'linked';
+    return 'not-linked';
   };
 
   return (
@@ -40,7 +57,7 @@ export const AttestationsGrid = () => {
           <AttestationCard
             key={attestation.id}
             title={attestation.title}
-            status={attestation.status}
+            status={getAttestationStatus(attestation.id)}
             onLink={() => handleLinkAttestation(attestation.id, attestation.title)}
           />
         ))}
@@ -48,7 +65,7 @@ export const AttestationsGrid = () => {
         {/* Second row - 2 cards with central ID card */}
         <AttestationCard
           title={attestations[4].title}
-          status={attestations[4].status}
+          status={getAttestationStatus(attestations[4].id)}
           onLink={() => handleLinkAttestation(attestations[4].id, attestations[4].title)}
         />
         
@@ -59,7 +76,7 @@ export const AttestationsGrid = () => {
         
         <AttestationCard
           title={attestations[5].title}
-          status={attestations[5].status}
+          status={getAttestationStatus(attestations[5].id)}
           onLink={() => handleLinkAttestation(attestations[5].id, attestations[5].title)}
         />
 
@@ -68,7 +85,7 @@ export const AttestationsGrid = () => {
           <AttestationCard
             key={attestation.id}
             title={attestation.title}
-            status={attestation.status}
+            status={getAttestationStatus(attestation.id)}
             onLink={() => handleLinkAttestation(attestation.id, attestation.title)}
           />
         ))}
@@ -78,7 +95,7 @@ export const AttestationsGrid = () => {
           <AttestationCard
             key={attestation.id}
             title={attestation.title}
-            status={attestation.status}
+            status={getAttestationStatus(attestation.id)}
             onLink={() => handleLinkAttestation(attestation.id, attestation.title)}
           />
         ))}
@@ -88,6 +105,11 @@ export const AttestationsGrid = () => {
         <p>Attestations are stored as Merkle tree proofs on-chain</p>
         <p className="mt-1">QR code serves as the main verification point across dApps</p>
       </div>
+
+      <NationalIDModal 
+        open={nationalIDModalOpen} 
+        onOpenChange={setNationalIDModalOpen} 
+      />
     </div>
   );
 };

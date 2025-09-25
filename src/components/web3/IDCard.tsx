@@ -6,6 +6,7 @@ import { ReputationCard } from './ReputationCard';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useReputation } from '@/hooks/useReputation';
+import useAttestations from '@/hooks/useAttestations';
 import QRCode from 'qrcode';
 import { useEffect, useState } from 'react';
 
@@ -13,6 +14,7 @@ export const IDCard = () => {
   const { account } = useWeb3();
   const { profile } = useUserProfile();
   const { reputation } = useReputation();
+  const { getAttestationHash } = useAttestations();
   const [qrCodeUrl, setQrCodeUrl] = useState('');
   
   // Mock account for demo purposes when no wallet is connected
@@ -23,16 +25,21 @@ export const IDCard = () => {
   // Determine reputation tier
   const reputationType = displayScore >= 1000000 ? 'GOLDEN' : 'SILVER';
 
-  // Generate QR code
+  // Get verification hash if available
+  const verificationHash = getAttestationHash('national-id');
+  
+  // Generate QR code with verification hash if available, otherwise use account
+  const qrData = verificationHash || demoAccount;
+  
   useEffect(() => {
-    QRCode.toDataURL(demoAccount, { 
+    QRCode.toDataURL(qrData, { 
       width: 60,
       margin: 1,
       color: { dark: '#000000', light: 'transparent' }
     })
     .then(url => setQrCodeUrl(url))
     .catch(err => console.error('QR Code generation failed:', err));
-  }, [demoAccount]);
+  }, [qrData]);
 
   return (
     <Dialog>

@@ -6,6 +6,7 @@ import { Download, Eye, EyeOff, Shield, CheckCircle2 } from 'lucide-react';
 import { useReputation } from '@/hooks/useReputation';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { useUserProfile } from '@/hooks/useUserProfile';
+import useAttestations from '@/hooks/useAttestations';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { toast } from 'sonner';
@@ -16,19 +17,22 @@ export const ReputationCard = () => {
   const { account } = useWeb3();
   const { reputation, badge, isPublic, togglePublicSharing } = useReputation();
   const { profile } = useUserProfile();
+  const { getAttestationHash } = useAttestations();
   const [qrCodeUrl, setQrCodeUrl] = useState('');
 
-  // Generate QR code for the wallet address  
+  // Generate QR code - use verification hash if available, otherwise wallet address
   useEffect(() => {
-    const addressToUse = account || '0x1234567890123456789012345678901234567890';
-    QRCode.toDataURL(addressToUse, { 
+    const verificationHash = getAttestationHash('national-id');
+    const qrData = verificationHash || account || '0x1234567890123456789012345678901234567890';
+    
+    QRCode.toDataURL(qrData, { 
       width: 120,
       margin: 1,
       color: { dark: '#000000', light: '#FFD700' }
     })
     .then(url => setQrCodeUrl(url))
     .catch(err => console.error('QR Code generation failed:', err));
-  }, [account]);
+  }, [account, getAttestationHash]);
 
   const downloadCard = async () => {
     const element = document.getElementById('golden-reputation-card');
@@ -178,6 +182,16 @@ export const ReputationCard = () => {
                 </div>
               </div>
               
+              {/* Verification Hash Display */}
+              {getAttestationHash('national-id') && (
+                <div className="mb-2">
+                  <div className="text-xs text-black/70 mb-1">Verification Hash</div>
+                  <div className="font-mono text-xs text-black bg-black/10 p-1 rounded">
+                    {getAttestationHash('national-id')?.substring(0, 16)}...
+                  </div>
+                </div>
+              )}
+              
               {/* Signature line */}
               <div className="mt-4">
                 <div className="text-xs text-black/70 mb-2">Signature</div>
@@ -190,6 +204,12 @@ export const ReputationCard = () => {
             </div>
             
             <div className="text-right">
+              {getAttestationHash('national-id') && (
+                <div className="text-xs text-green-700 mb-1 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  ID Verified
+                </div>
+              )}
               <div className="text-xs text-black/70">
                 Powered by TEN Testnet
               </div>

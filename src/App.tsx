@@ -23,6 +23,7 @@ import Connections from "./pages/Connections";
 import Airdrop from "./pages/Airdrop";
 import Calendar from "./pages/Calendar";
 import ID from "./pages/ID";
+import Verify from "./pages/Verify";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -144,6 +145,11 @@ const AppContent = () => {
         <Route path="/id" element={
           <RouteGuard requiredAuth="wallet">
             <ID />
+          </RouteGuard>
+        } />
+        <Route path="/verify" element={
+          <RouteGuard requiredAuth="wallet">
+            <Verify />
           </RouteGuard>
         } />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
