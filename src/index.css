@@ -9,33 +9,33 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Light Theme */
-    --background: linear-gradient(135deg, hsl(15 100% 95%), hsl(210 100% 95%));
-    --foreground: 0 0% 0%;
+    --background: linear-gradient(135deg, hsl(210 100% 97%), hsl(220 100% 96%));
+    --foreground: 220 15% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    --card-foreground: 220 15% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover-foreground: 220 15% 15%;
 
-    --primary: 210 100% 82%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 220 100% 65%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 15 100% 89%;
-    --secondary-foreground: 0 0% 0%;
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 220 25% 25%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 45%;
+    --muted: 220 15% 95%;
+    --muted-foreground: 220 10% 50%;
 
-    --accent: 210 100% 82%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 220 100% 65%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 90%;
+    --border: 220 15% 85%;
     --input: 0 0% 100%;
-    --ring: 210 100% 82%;
+    --ring: 220 100% 65%;
 
     --radius: 0.75rem;
 
@@ -45,12 +45,12 @@ All colors MUST be HSL.
     --tab-inactive: 0 0% 100%;
     
     /* Web3 colors */
-    --web3-orange: 25 95% 63%;
-    --web3-orange-muted: 25 90% 85%;
-    --web3-blue: 217 91% 60%;
-    --web3-success: 142 76% 36%;
-    --web3-warning: 38 92% 50%;
-    --web3-purple: 262 83% 58%;
+    --web3-orange: 25 100% 55%;
+    --web3-orange-muted: 25 85% 75%;
+    --web3-blue: 217 95% 55%;
+    --web3-success: 142 80% 45%;
+    --web3-warning: 38 95% 55%;
+    --web3-purple: 262 85% 65%;
     
     /* Badge colors */
     --badge-bronze: 30 67% 56%;
@@ -58,15 +58,15 @@ All colors MUST be HSL.
     --badge-gold: 45 93% 58%;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(15 100% 95%), hsl(210 100% 95%));
-    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(0 0% 98%));
-    --gradient-glow: radial-gradient(circle at center, hsl(210 100% 82% / 0.1), transparent 70%);
+    --gradient-primary: linear-gradient(135deg, hsl(210 100% 97%), hsl(220 100% 96%));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(220 20% 98%));
+    --gradient-glow: radial-gradient(circle at center, hsl(220 100% 65% / 0.15), transparent 70%);
     --gradient-web3: linear-gradient(135deg, hsl(var(--web3-blue)), hsl(var(--web3-purple)));
     --gradient-stats: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--web3-blue)) 100%);
 
     /* Shadows */
-    --shadow-glow: 0 0 40px hsl(210 100% 82% / 0.2);
-    --shadow-card: 0 10px 30px -5px hsl(0 0% 0% / 0.1);
+    --shadow-glow: 0 0 40px hsl(220 100% 65% / 0.25);
+    --shadow-card: 0 10px 30px -5px hsl(220 20% 20% / 0.15);
     
     /* Animation */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -83,33 +83,33 @@ All colors MUST be HSL.
 
   .dark {
     /* Dark Theme */
-    --background: linear-gradient(135deg, hsl(0 0% 5%), hsl(210 100% 10%));
-    --foreground: 0 0% 100%;
+    --background: linear-gradient(135deg, hsl(220 25% 8%), hsl(220 30% 12%));
+    --foreground: 220 15% 95%;
 
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 100%;
+    --card: 220 25% 12%;
+    --card-foreground: 220 15% 95%;
 
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 220 25% 12%;
+    --popover-foreground: 220 15% 95%;
 
-    --primary: 210 100% 82%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 220 100% 75%;
+    --primary-foreground: 220 25% 15%;
 
-    --secondary: 15 100% 20%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 220 25% 18%;
+    --secondary-foreground: 220 15% 85%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 220 25% 16%;
+    --muted-foreground: 220 15% 65%;
 
-    --accent: 210 100% 82%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 220 100% 75%;
+    --accent-foreground: 220 25% 15%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 220 15% 95%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 15%;
-    --ring: 210 100% 82%;
+    --border: 220 25% 22%;
+    --input: 220 25% 16%;
+    --ring: 220 100% 75%;
 
     /* Custom app colors */
     --tabs-bg: 15 100% 20%;
@@ -117,12 +117,12 @@ All colors MUST be HSL.
     --tab-inactive: 0 0% 15%;
     
     /* Web3 colors */
-    --web3-orange: 25 95% 63%;
-    --web3-orange-muted: 25 90% 65%;
-    --web3-blue: 217 91% 60%;
-    --web3-success: 142 76% 36%;
-    --web3-warning: 38 92% 50%;
-    --web3-purple: 262 83% 58%;
+    --web3-orange: 25 100% 65%;
+    --web3-orange-muted: 25 85% 75%;
+    --web3-blue: 217 95% 65%;
+    --web3-success: 142 80% 55%;
+    --web3-warning: 38 95% 65%;
+    --web3-purple: 262 85% 75%;
     
     /* Badge colors */
     --badge-bronze: 30 67% 56%;
@@ -130,15 +130,15 @@ All colors MUST be HSL.
     --badge-gold: 45 93% 58%;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 5%), hsl(210 100% 10%));
-    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(0 0% 8%));
-    --gradient-glow: radial-gradient(circle at center, hsl(210 100% 82% / 0.2), transparent 70%);
+    --gradient-primary: linear-gradient(135deg, hsl(220 25% 8%), hsl(220 30% 12%));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(220 25% 10%));
+    --gradient-glow: radial-gradient(circle at center, hsl(220 100% 75% / 0.2), transparent 70%);
     --gradient-web3: linear-gradient(135deg, hsl(var(--web3-blue)), hsl(var(--web3-purple)));
     --gradient-stats: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--web3-blue)) 100%);
 
     /* Shadows */
-    --shadow-glow: 0 0 40px hsl(210 100% 82% / 0.3);
-    --shadow-card: 0 10px 30px -5px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 40px hsl(220 100% 75% / 0.3);
+    --shadow-card: 0 10px 30px -5px hsl(220 25% 5% / 0.4);
 
     --sidebar-background: 0 0% 8%;
     --sidebar-foreground: 0 0% 100%;

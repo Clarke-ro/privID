@@ -17,7 +17,11 @@ export const AnalyticsDashboard = () => {
     rank: badge.type === 'gold' ? 'Top 5%' : badge.type === 'silver' ? 'Top 25%' : badge.type === 'bronze' ? 'Top 50%' : 'Unranked'
   };
 
-  const nextBadgeThreshold = badge.type === 'bronze' ? 500 : badge.type === 'silver' ? 1000 : badge.type === 'gold' ? 2000 : 100;
+  const nextBadgeThreshold = badge.type === 'none' ? 100000 : 
+                             badge.type === 'bronze' ? 1000000 : 
+                             badge.type === 'silver' ? 10000000 : 
+                             badge.type === 'gold' && badge.threshold === 10000000 ? 100000000 : 
+                             badge.threshold * 10;
   const progressToNext = reputation ? Math.min((reputation.total / nextBadgeThreshold) * 100, 100) : 0;
 
   return (
@@ -99,15 +103,15 @@ export const AnalyticsDashboard = () => {
               Current: {badge.name}
             </span>
             <span className="text-sm text-muted-foreground">
-              Next: {nextBadgeThreshold} pts
+              Next: {badge.type === 'gold' && badge.threshold >= 100000000 ? 'Max Level' : `${nextBadgeThreshold.toLocaleString()} pts`}
             </span>
           </div>
           <Progress value={progressToNext} className="h-3" />
           <div className="text-xs text-muted-foreground">
-            {reputation?.total || 0} / {nextBadgeThreshold} points
-            {reputation && reputation.total < nextBadgeThreshold && (
+            {reputation?.total || 0} / {nextBadgeThreshold.toLocaleString()} points
+            {reputation && reputation.total < nextBadgeThreshold && badge.type !== 'gold' || badge.threshold < 100000000 && (
               <span className="ml-2">
-                ({nextBadgeThreshold - reputation.total} points to go)
+                ({(nextBadgeThreshold - reputation.total).toLocaleString()} points to go)
               </span>
             )}
           </div>

@@ -88,9 +88,9 @@ export const EditProfileModal = ({ children }: EditProfileModalProps) => {
         {children}
       </DialogTrigger>
       
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md border-border bg-card text-card-foreground shadow-glow">
         <DialogHeader>
-          <DialogTitle>Edit Profile</DialogTitle>
+          <DialogTitle className="text-foreground">Edit Profile</DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-6">

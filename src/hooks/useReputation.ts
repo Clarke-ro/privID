@@ -102,23 +102,20 @@ export const useReputation = () => {
         
         toast.success('Reputation score loaded from blockchain');
       } else {
-        // Backend unavailable, use mock data
-        console.log('Backend unavailable, generating mock reputation data');
-        const mockReputationData = {
-          balance: 450000 + Math.floor(Math.random() * 100000),
-          transfers: 320000 + Math.floor(Math.random() * 50000),
-          liquidity: 580000 + Math.floor(Math.random() * 80000),
-          governance: 240000 + Math.floor(Math.random() * 40000),
+        // Backend unavailable, start with zero scores
+        console.log('Backend unavailable, starting with zero reputation');
+        const initialReputationData = {
+          balance: 0,
+          transfers: 0,
+          liquidity: 0,
+          governance: 0,
           total: 0,
         };
         
-        mockReputationData.total = mockReputationData.balance + mockReputationData.transfers + 
-                                  mockReputationData.liquidity + mockReputationData.governance;
-        
-        console.log('Mock reputation data generated:', mockReputationData);
-        setReputation(mockReputationData);
-        setIsPublic(true);
-        toast.info('Using demo data - backend server not available');
+        console.log('Initial reputation data set to zero:', initialReputationData);
+        setReputation(initialReputationData);
+        setIsPublic(false);
+        toast.info('Connect to backend server to update reputation scores');
       }
       
       setIsRegistered(true);
