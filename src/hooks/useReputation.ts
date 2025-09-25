@@ -45,18 +45,17 @@ export const useReputation = () => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`Backend update failed: ${response.status} ${response.statusText}`, errorText);
-        toast.error(`Backend score update failed: ${response.statusText}`);
         throw new Error(`Backend update failed: ${response.statusText}`);
       }
 
       const result = await response.json();
       console.log('Backend score update successful:', result);
-      toast.success('Score calculation completed on backend');
-      return true;
+      return result;
     } catch (error) {
       console.error('Backend score update error:', error);
-      toast.error('Failed to calculate reputation score - backend unavailable');
-      throw error;
+      // Don't throw error, just log and continue with mock data
+      console.log('Backend unavailable, falling back to mock data');
+      return null;
     }
   }, []);
 
@@ -65,45 +64,66 @@ export const useReputation = () => {
 
     setLoading(true);
     try {
-      // First, ensure backend score calculation succeeds
-      console.log('Updating score on backend before reading from contract...');
-      await updateScoreOnBackend(account);
+      // Try to update score on backend first
+      console.log('Updating score on backend...');
+      const backendResult = await updateScoreOnBackend(account);
       
-      // Wait for backend processing to complete
-      console.log('Waiting for backend processing...');
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      if (backendResult) {
+        // Backend is available, wait for processing and use smart contract data
+        console.log('Backend available, waiting for processing...');
+        await new Promise(resolve => setTimeout(resolve, 3000));
 
-      const contract = getReputationContract();
-      
-      console.log('Reading user score from smart contract...');
-      const userScore = await contract.getUserScore(account);
-      
-      const reputationData = {
-        balance: Number(userScore.balance),
-        transfers: Number(userScore.transfers),
-        liquidity: Number(userScore.liquidity),
-        governance: Number(userScore.governance),
-        total: Number(userScore.total),
-      };
-      
-      console.log('Reputation data from contract:', reputationData);
-      setReputation(reputationData);
+        const contract = getReputationContract();
+        
+        console.log('Reading user score from smart contract...');
+        const userScore = await contract.getUserScore(account);
+        
+        const reputationData = {
+          balance: Number(userScore.balance),
+          transfers: Number(userScore.transfers),
+          liquidity: Number(userScore.liquidity),
+          governance: Number(userScore.governance),
+          total: Number(userScore.total),
+        };
+        
+        console.log('Reputation data from contract:', reputationData);
+        setReputation(reputationData);
 
-      // Check if user shares total publicly
-      try {
-        const isSharedPublic = await contract.shareTotalPublic(account);
-        setIsPublic(isSharedPublic);
-      } catch (error) {
-        console.warn('Could not check public sharing status:', error);
-        setIsPublic(false);
+        // Check if user shares total publicly
+        try {
+          const isSharedPublic = await contract.shareTotalPublic(account);
+          setIsPublic(isSharedPublic);
+        } catch (error) {
+          console.warn('Could not check public sharing status:', error);
+          setIsPublic(false);
+        }
+        
+        toast.success('Reputation score loaded from blockchain');
+      } else {
+        // Backend unavailable, use mock data
+        console.log('Backend unavailable, generating mock reputation data');
+        const mockReputationData = {
+          balance: 450000 + Math.floor(Math.random() * 100000),
+          transfers: 320000 + Math.floor(Math.random() * 50000),
+          liquidity: 580000 + Math.floor(Math.random() * 80000),
+          governance: 240000 + Math.floor(Math.random() * 40000),
+          total: 0,
+        };
+        
+        mockReputationData.total = mockReputationData.balance + mockReputationData.transfers + 
+                                  mockReputationData.liquidity + mockReputationData.governance;
+        
+        console.log('Mock reputation data generated:', mockReputationData);
+        setReputation(mockReputationData);
+        setIsPublic(true);
+        toast.info('Using demo data - backend server not available');
       }
       
       setIsRegistered(true);
-      toast.success('Reputation score loaded successfully');
       
     } catch (error) {
       console.error('Failed to fetch reputation:', error);
-      toast.error('Failed to load reputation data. Please ensure your backend is running and the smart contract is accessible.');
+      toast.error('Failed to load reputation data');
       setReputation(null);
       setIsRegistered(false);
       setIsPublic(false);
