@@ -4,20 +4,11 @@ import { Shield, Zap, Lock, TrendingUp } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { useReputation } from '@/hooks/useReputation';
 import { WalletButton } from '@/components/web3/WalletButton';
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
 
 export const WelcomeSection = () => {
   const { isConnected } = useWeb3();
   const { isRegistered, register, registering } = useReputation();
-  const navigate = useNavigate();
-
-  // Redirect to main app when wallet is connected and registered
-  useEffect(() => {
-    if (isConnected && isRegistered) {
-      navigate('/', { replace: true });
-    }
-  }, [isConnected, isRegistered, navigate]);
+  // Remove the navigate logic since RouteGuard handles it now
 
   if (!isConnected) {
     return (
@@ -89,21 +80,6 @@ export const WelcomeSection = () => {
           
           <p className="text-xs text-muted-foreground mt-4">
             This will create your reputation profile on the TEN Testnet
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // Show loading state while redirecting
-  if (isConnected && isRegistered) {
-    return (
-      <Card className="bg-gradient-card border-border shadow-card">
-        <CardContent className="p-8 text-center">
-          <Shield className="w-16 h-16 text-web3-orange mx-auto mb-4 animate-pulse" />
-          <h2 className="text-2xl font-bold mb-2">Redirecting to Dashboard...</h2>
-          <p className="text-muted-foreground">
-            Taking you to your reputation dashboard
           </p>
         </CardContent>
       </Card>

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { useWeb3 } from "@/hooks/useWeb3";
+import { useReputation } from "@/hooks/useReputation";
 import { useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Landing from "./pages/Landing";
@@ -34,6 +35,7 @@ function RouteGuard({ children, requiredAuth }: {
   requiredAuth: 'none' | 'wallet';
 }) {
   const { isConnected } = useWeb3();
+  const { isRegistered } = useReputation();
   const navigate = useNavigate();
   const navigatingRef = useRef(false);
 
@@ -41,16 +43,16 @@ function RouteGuard({ children, requiredAuth }: {
     if (navigatingRef.current) return;
 
     const timer = setTimeout(() => {
-      // Landing page - only accessible when wallet not connected
-      if (requiredAuth === 'none' && isConnected) {
+      // Landing page - only accessible when wallet not connected OR not registered
+      if (requiredAuth === 'none' && isConnected && isRegistered) {
         navigatingRef.current = true;
         navigate('/', { replace: true });
         setTimeout(() => { navigatingRef.current = false; }, 100);
         return;
       }
 
-      // Dashboard pages - only accessible when wallet connected
-      if (requiredAuth === 'wallet' && !isConnected) {
+      // Dashboard pages - only accessible when wallet connected AND registered
+      if (requiredAuth === 'wallet' && (!isConnected || !isRegistered)) {
         navigatingRef.current = true;
         navigate('/landing', { replace: true });
         setTimeout(() => { navigatingRef.current = false; }, 100);
@@ -59,11 +61,11 @@ function RouteGuard({ children, requiredAuth }: {
     }, 50);
 
     return () => clearTimeout(timer);
-  }, [isConnected, navigate, requiredAuth]);
+  }, [isConnected, isRegistered, navigate, requiredAuth]);
 
   // Show loading or nothing while redirecting
-  if (requiredAuth === 'none' && isConnected) return null;
-  if (requiredAuth === 'wallet' && !isConnected) return null;
+  if (requiredAuth === 'none' && isConnected && isRegistered) return null;
+  if (requiredAuth === 'wallet' && (!isConnected || !isRegistered)) return null;
 
   return <>{children}</>;
 }
