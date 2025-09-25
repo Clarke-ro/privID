@@ -23,6 +23,7 @@ export const useReputation = () => {
   const [isPublic, setIsPublic] = useState(false);
   const [loading, setLoading] = useState(false);
   const [registering, setRegistering] = useState(false);
+  const [toggling, setToggling] = useState(false);
 
   const getBadge = useCallback((score: number): BadgeType => {
     if (score >= 1000) return { type: 'gold', threshold: 1000, name: 'Gold Elite' };
@@ -166,22 +167,33 @@ export const useReputation = () => {
       return;
     }
 
+    if (toggling) return; // Prevent multiple simultaneous calls
+
+    setToggling(true);
     try {
       const contract = getReputationContract();
-      const tx = await contract.setShareTotalPublic(!isPublic);
+      const newPublicState = !isPublic;
       
       toast.info('Transaction submitted...', {
-        description: 'Updating public sharing preference'
+        description: `Making reputation ${newPublicState ? 'public' : 'private'}`
       });
-      
+
+      const tx = await contract.setShareTotalPublic(newPublicState);
       await tx.wait();
-      setIsPublic(!isPublic);
-      toast.success(`Reputation is now ${!isPublic ? 'public' : 'private'}`);
+      
+      setIsPublic(newPublicState);
+      toast.success(`Reputation is now ${newPublicState ? 'public' : 'private'}!`);
     } catch (error) {
       console.error('Failed to toggle public sharing:', error);
-      toast.error('Failed to update preference. Please try again.');
+      if (error.code === 'ACTION_REJECTED') {
+        toast.error('Transaction was cancelled');
+      } else {
+        toast.error('Failed to update visibility. Please try again.');
+      }
+    } finally {
+      setToggling(false);
     }
-  }, [isConnected, isPublic, getReputationContract]);
+  }, [isConnected, isPublic, getReputationContract, toggling]);
 
   useEffect(() => {
     if (isConnected && account) {
@@ -202,6 +214,7 @@ export const useReputation = () => {
     isPublic,
     loading,
     registering,
+    toggling,
     register,
     togglePublicSharing,
     fetchReputation,
