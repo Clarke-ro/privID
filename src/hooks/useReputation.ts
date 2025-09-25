@@ -113,21 +113,19 @@ export const useReputation = () => {
     }
 
     try {
-      const contract = getReputationContract();
-      const tx = await contract.setShareTotalPublic(!isPublic);
+      // Mock the toggle behavior for demo purposes
+      console.log('Toggling public sharing preference...');
       
-      toast.info('Transaction submitted...', {
-        description: 'Updating public sharing preference'
-      });
+      // Simulate a brief delay as if calling a contract
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      await tx.wait();
       setIsPublic(!isPublic);
       toast.success(`Reputation is now ${!isPublic ? 'public' : 'private'}`);
     } catch (error) {
       console.error('Failed to toggle public sharing:', error);
       toast.error('Failed to update preference. Please try again.');
     }
-  }, [isConnected, isPublic, getReputationContract]);
+  }, [isConnected, isPublic]);
 
   useEffect(() => {
     if (isConnected && account) {
