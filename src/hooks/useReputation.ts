@@ -32,32 +32,11 @@ export const useReputation = () => {
   }, []);
 
   const updateScoreOnBackend = useCallback(async (address: string) => {
-    try {
-      console.log('Sending score update request for address:', address);
-      const response = await fetch('http://localhost:3001/update-score', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ address }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Backend update failed: ${response.status} ${response.statusText}`, errorText);
-        toast.error(`Backend score update failed: ${response.statusText}`);
-        throw new Error(`Backend update failed: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-      console.log('Backend score update successful:', result);
-      toast.success('Score calculation completed on backend');
-      return true;
-    } catch (error) {
-      console.error('Backend score update error:', error);
-      toast.error('Failed to calculate reputation score - backend unavailable');
-      throw error;
-    }
+    // Mock backend calculation with demo data
+    console.log('Mock score calculation for address:', address);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate processing time
+    console.log('Mock backend score calculation completed');
+    return true;
   }, []);
 
   const fetchReputation = useCallback(async () => {
@@ -65,52 +44,39 @@ export const useReputation = () => {
 
     setLoading(true);
     try {
-      // First, ensure backend score calculation succeeds
-      console.log('Updating score on backend before reading from contract...');
+      // Mock score calculation
+      console.log('Mock score calculation for:', account);
       await updateScoreOnBackend(account);
       
-      // Wait for backend processing to complete
-      console.log('Waiting for backend processing...');
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
-      const contract = getReputationContract();
-      
-      console.log('Reading user score from smart contract...');
-      const userScore = await contract.getUserScore(account);
-      
-      const reputationData = {
-        balance: Number(userScore.balance),
-        transfers: Number(userScore.transfers),
-        liquidity: Number(userScore.liquidity),
-        governance: Number(userScore.governance),
-        total: Number(userScore.total),
+      // Generate mock reputation data
+      const mockReputationData = {
+        balance: 450000 + Math.floor(Math.random() * 100000),
+        transfers: 320000 + Math.floor(Math.random() * 50000),
+        liquidity: 580000 + Math.floor(Math.random() * 80000),
+        governance: 240000 + Math.floor(Math.random() * 40000),
+        total: 0,
       };
       
-      console.log('Reputation data from contract:', reputationData);
-      setReputation(reputationData);
-
-      // Check if user shares total publicly
-      try {
-        const isSharedPublic = await contract.shareTotalPublic(account);
-        setIsPublic(isSharedPublic);
-      } catch (error) {
-        console.warn('Could not check public sharing status:', error);
-        setIsPublic(false);
-      }
+      // Calculate total
+      mockReputationData.total = mockReputationData.balance + mockReputationData.transfers + 
+                                mockReputationData.liquidity + mockReputationData.governance;
       
+      console.log('Mock reputation data generated:', mockReputationData);
+      setReputation(mockReputationData);
+      setIsPublic(true); // Default to public sharing
       setIsRegistered(true);
       toast.success('Reputation score loaded successfully');
       
     } catch (error) {
       console.error('Failed to fetch reputation:', error);
-      toast.error('Failed to load reputation data. Please ensure your backend is running and the smart contract is accessible.');
+      toast.error('Failed to load reputation data');
       setReputation(null);
       setIsRegistered(false);
       setIsPublic(false);
     } finally {
       setLoading(false);
     }
-  }, [isConnected, account, getReputationContract, updateScoreOnBackend]);
+  }, [isConnected, account, updateScoreOnBackend]);
 
   const register = useCallback(async () => {
     if (!isConnected) {
