@@ -109,7 +109,7 @@ export const AnalyticsDashboard = () => {
           <Progress value={progressToNext} className="h-3" />
           <div className="text-xs text-muted-foreground">
             {reputation?.total || 0} / {nextBadgeThreshold.toLocaleString()} points
-            {reputation && reputation.total < nextBadgeThreshold && badge.type !== 'gold' || badge.threshold < 100000000 && (
+            {reputation && reputation.total < nextBadgeThreshold && (
               <span className="ml-2">
                 ({(nextBadgeThreshold - reputation.total).toLocaleString()} points to go)
               </span>
