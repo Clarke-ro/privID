@@ -159,11 +159,13 @@ export const ReputationCard = () => {
           </div>
 
           {/* Main Score */}
-          <div className="text-center mb-6 relative z-10">
-            <div className="text-5xl font-bold text-black mb-2">
-              {isPublic ? displayScore.toLocaleString() : '***'}
+          {isPublic && (
+            <div className="text-center mb-6 relative z-10">
+              <div className="text-5xl font-bold text-black mb-2">
+                {displayScore.toLocaleString()}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Shield Icon */}
           <div className="flex justify-center mb-6 relative z-10">
