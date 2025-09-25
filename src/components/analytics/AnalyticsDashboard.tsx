@@ -14,10 +14,10 @@ export const AnalyticsDashboard = () => {
     governanceParticipation: reputation?.governance || 0,
     weeklyGrowth: '+12%',
     monthlyGrowth: '+35%',
-    rank: badge.type === 'gold' ? 'Top 5%' : badge.type === 'silver' ? 'Top 25%' : badge.type === 'bronze' ? 'Top 50%' : 'Unranked'
+    rank: badge.type === 'legend' ? 'Top 1%' : badge.type === 'gold' ? 'Top 5%' : badge.type === 'silver' ? 'Top 25%' : badge.type === 'bronze' ? 'Top 50%' : 'Unranked'
   };
 
-  const nextBadgeThreshold = badge.type === 'bronze' ? 500 : badge.type === 'silver' ? 1000 : badge.type === 'gold' ? 2000 : 100;
+  const nextBadgeThreshold = badge.type === 'bronze' ? 1000000 : badge.type === 'silver' ? 5000000 : badge.type === 'gold' ? 10000000 : 100000;
   const progressToNext = reputation ? Math.min((reputation.total / nextBadgeThreshold) * 100, 100) : 0;
 
   return (

@@ -49,12 +49,16 @@ export const useReputation = () => {
       console.log('Mock score calculation for:', account);
       await updateScoreOnBackend(account);
       
-      // Generate mock reputation data with higher values for new thresholds
+      // Generate consistent mock reputation data using account as seed
+      const seed = account ? parseInt(account.slice(-8), 16) : 12345;
+      const random = (seed * 9301 + 49297) % 233280;
+      const baseScore = 5500000; // Base score around 5.5M
+      
       const mockReputationData = {
-        balance: 1500000 + Math.floor(Math.random() * 500000),
-        transfers: 1200000 + Math.floor(Math.random() * 300000),
-        liquidity: 2000000 + Math.floor(Math.random() * 800000),
-        governance: 800000 + Math.floor(Math.random() * 400000),
+        balance: Math.floor(baseScore * 0.25 + (random % 100000)),
+        transfers: Math.floor(baseScore * 0.22 + (random % 80000)),
+        liquidity: Math.floor(baseScore * 0.35 + (random % 120000)),
+        governance: Math.floor(baseScore * 0.18 + (random % 60000)),
         total: 0,
       };
       

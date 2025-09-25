@@ -20,7 +20,7 @@ export const IDCard = () => {
   // Mock account for demo purposes when no wallet is connected
   const demoAccount = account || '0x1234567890123456789012345678901234567890';
   const demoName = profile.name || 'Demo User';
-  const displayScore = reputation?.total || 1589652;
+  const displayScore = reputation?.total || 0;
   
   // Determine reputation tier
   const reputationType = displayScore >= 1000000 ? 'GOLDEN' : 'SILVER';

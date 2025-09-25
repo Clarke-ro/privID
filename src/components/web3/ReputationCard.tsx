@@ -66,8 +66,8 @@ export const ReputationCard = () => {
     }
   };
 
-  // Mock reputation score for display (since smart contract is failing)
-  const displayScore = reputation?.total || 1589652;
+  // Use reputation score from hook
+  const displayScore = reputation?.total || 0;
   
   // Mock account for demo purposes when no wallet is connected
   const demoAccount = account || '0x1234567890123456789012345678901234567890';

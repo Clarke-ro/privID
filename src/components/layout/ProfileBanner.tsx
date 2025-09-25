@@ -12,7 +12,7 @@ export const ProfileBanner = () => {
   const { profile } = useUserProfile();
 
   const displayAccount = account || "0x1234...5678";
-  const displayReputation = reputation?.total || 1286;
+  const displayReputation = reputation?.total || 0;
 
   return (
     <div className="relative">
