@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Camera, Upload, Shield, CheckCircle } from 'lucide-react';
+import { Camera, Upload, Shield, CheckCircle, X } from 'lucide-react';
 import { toast } from 'sonner';
 import useAttestations from '@/hooks/useAttestations';
 
@@ -20,7 +20,87 @@ export const NationalIDModal = ({ open, onOpenChange }: NationalIDModalProps) =>
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [faceVerified, setFaceVerified] = useState(false);
   const [generatedHash, setGeneratedHash] = useState<string>('');
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
+  const [cameraActive, setCameraActive] = useState(false);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const { addAttestation } = useAttestations();
+
+  // Cleanup camera when modal closes or step changes
+  useEffect(() => {
+    if (!open || currentStep !== 'facial') {
+      stopCamera();
+    }
+  }, [open, currentStep]);
+
+  // Start camera when entering facial verification step
+  useEffect(() => {
+    if (currentStep === 'facial') {
+      startCamera();
+    }
+  }, [currentStep]);
+
+  const startCamera = async () => {
+    try {
+      setCameraError(null);
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+          facingMode: 'user'
+        } 
+      });
+      
+      setCameraStream(stream);
+      setCameraActive(true);
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
+    } catch (error) {
+      console.error('Camera access error:', error);
+      setCameraError('Unable to access camera. Please check permissions.');
+      toast.error('Camera access denied or unavailable');
+    }
+  };
+
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    setCameraActive(false);
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
+      
+      if (context) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        const imageData = canvas.toDataURL('image/jpeg');
+        setCapturedImage(imageData);
+        stopCamera();
+        
+        // Simulate verification process
+        setTimeout(() => {
+          setFaceVerified(true);
+          toast.success('Facial verification completed');
+        }, 1500);
+      }
+    }
+  };
 
   const generateHash = () => {
     // Generate a random hash for demo purposes
@@ -40,14 +120,6 @@ export const NationalIDModal = ({ open, onOpenChange }: NationalIDModalProps) =>
     }
   };
 
-  const handleFacialVerification = () => {
-    // Simulate facial verification
-    setTimeout(() => {
-      setFaceVerified(true);
-      toast.success('Facial verification completed');
-    }, 2000);
-  };
-
   const handleNextStep = () => {
     if (currentStep === 'upload' && uploadedFile) {
       setCurrentStep('facial');
@@ -62,12 +134,15 @@ export const NationalIDModal = ({ open, onOpenChange }: NationalIDModalProps) =>
     if (generatedHash) {
       addAttestation('national-id', generatedHash);
       toast.success('National ID verification completed!');
+      stopCamera(); // Clean up camera resources
       onOpenChange(false);
       // Reset state
       setCurrentStep('upload');
       setUploadedFile(null);
       setFaceVerified(false);
       setGeneratedHash('');
+      setCapturedImage(null);
+      setCameraError(null);
     }
   };
 
@@ -114,34 +189,74 @@ export const NationalIDModal = ({ open, onOpenChange }: NationalIDModalProps) =>
         <Camera className="mx-auto h-12 w-12 text-web3-primary mb-4" />
         <h3 className="text-lg font-semibold mb-2">Facial Verification</h3>
         <p className="text-sm text-muted-foreground">
-          Verify your identity by taking a photo of yourself
+          {faceVerified ? 'Verification complete!' : 'Position your face within the frame and take a photo'}
         </p>
       </div>
       
       <Card className="bg-gradient-to-br from-web3-dark/50 to-web3-accent/10">
         <CardContent className="p-8">
-          <div className="aspect-video bg-web3-dark/20 rounded-lg flex items-center justify-center border-2 border-dashed border-web3-primary/30">
-            {faceVerified ? (
-              <div className="text-center">
-                <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-2" />
-                <p className="text-green-500 font-medium">Face Verified!</p>
+          <div className="aspect-video bg-web3-dark/20 rounded-lg flex items-center justify-center border-2 border-dashed border-web3-primary/30 relative overflow-hidden">
+            {cameraError ? (
+              <div className="text-center text-red-400">
+                <X className="mx-auto h-16 w-16 mb-2" />
+                <p className="text-sm">{cameraError}</p>
+                <Button onClick={startCamera} className="mt-2" size="sm">
+                  Retry Camera Access
+                </Button>
+              </div>
+            ) : faceVerified && capturedImage ? (
+              <div className="text-center w-full h-full">
+                <img 
+                  src={capturedImage} 
+                  alt="Captured verification photo" 
+                  className="w-full h-full object-cover rounded-lg"
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                  <div className="text-center">
+                    <CheckCircle className="mx-auto h-16 w-16 text-green-500 mb-2" />
+                    <p className="text-green-500 font-medium">Face Verified!</p>
+                  </div>
+                </div>
+              </div>
+            ) : cameraActive ? (
+              <div className="w-full h-full relative">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover rounded-lg"
+                />
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                  <Button 
+                    onClick={capturePhoto}
+                    className="bg-white/20 hover:bg-white/30 text-white border border-white/30"
+                    size="sm"
+                  >
+                    <Camera className="w-4 h-4 mr-2" />
+                    Capture Photo
+                  </Button>
+                </div>
               </div>
             ) : (
               <div className="text-center">
                 <Camera className="mx-auto h-16 w-16 text-web3-primary/50 mb-2" />
-                <p className="text-web3-muted">Camera Preview</p>
+                <p className="text-web3-muted">Starting camera...</p>
               </div>
             )}
           </div>
+          
+          {/* Hidden canvas for photo capture */}
+          <canvas ref={canvasRef} className="hidden" />
         </CardContent>
       </Card>
       
       <Button 
-        onClick={faceVerified ? handleNextStep : handleFacialVerification}
-        disabled={faceVerified}
+        onClick={handleNextStep}
+        disabled={!faceVerified}
         className="w-full"
       >
-        {faceVerified ? 'Continue to Confirmation' : 'Verify Face'}
+        Continue to Confirmation
       </Button>
     </div>
   );
