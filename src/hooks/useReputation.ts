@@ -11,7 +11,7 @@ export interface ReputationBreakdown {
 }
 
 export interface BadgeType {
-  type: 'bronze' | 'silver' | 'gold' | 'none';
+  type: 'bronze' | 'silver' | 'gold' | 'legend' | 'none';
   threshold: number;
   name: string;
 }
@@ -25,9 +25,10 @@ export const useReputation = () => {
   const [registering, setRegistering] = useState(false);
 
   const getBadge = useCallback((score: number): BadgeType => {
-    if (score >= 1000) return { type: 'gold', threshold: 1000, name: 'Gold Elite' };
-    if (score >= 500) return { type: 'silver', threshold: 500, name: 'Silver Investor' };
-    if (score >= 100) return { type: 'bronze', threshold: 100, name: 'Bronze Pioneer' };
+    if (score >= 10000000) return { type: 'legend', threshold: 10000000, name: 'Legend' };
+    if (score >= 5000000) return { type: 'gold', threshold: 5000000, name: 'Gold Elite' };
+    if (score >= 1000000) return { type: 'silver', threshold: 1000000, name: 'Silver Investor' };
+    if (score >= 100000) return { type: 'bronze', threshold: 100000, name: 'Bronze Pioneer' };
     return { type: 'none', threshold: 0, name: 'Unranked' };
   }, []);
 
@@ -48,12 +49,12 @@ export const useReputation = () => {
       console.log('Mock score calculation for:', account);
       await updateScoreOnBackend(account);
       
-      // Generate mock reputation data
+      // Generate mock reputation data with higher values for new thresholds
       const mockReputationData = {
-        balance: 450000 + Math.floor(Math.random() * 100000),
-        transfers: 320000 + Math.floor(Math.random() * 50000),
-        liquidity: 580000 + Math.floor(Math.random() * 80000),
-        governance: 240000 + Math.floor(Math.random() * 40000),
+        balance: 1500000 + Math.floor(Math.random() * 500000),
+        transfers: 1200000 + Math.floor(Math.random() * 300000),
+        liquidity: 2000000 + Math.floor(Math.random() * 800000),
+        governance: 800000 + Math.floor(Math.random() * 400000),
         total: 0,
       };
       

@@ -20,6 +20,8 @@ export const UserProfileCard = () => {
   };
   const getBadgeColor = (type: string) => {
     switch (type) {
+      case 'legend':
+        return 'bg-gradient-to-r from-purple-500 to-pink-500 text-white';
       case 'gold':
         return 'bg-badge-gold text-black';
       case 'silver':
