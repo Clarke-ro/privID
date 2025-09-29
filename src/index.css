@@ -9,39 +9,39 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Light Theme */
-    --background: linear-gradient(135deg, hsl(15 100% 95%), hsl(210 100% 95%));
-    --foreground: 0 0% 0%;
+    --background: linear-gradient(135deg, hsl(210 100% 97%) 0%, hsl(280 100% 98%) 50%, hsl(15 100% 96%) 100%);
+    --foreground: 0 0% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
+    --card-foreground: 0 0% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover-foreground: 0 0% 10%;
 
-    --primary: 210 100% 82%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 15 100% 89%;
-    --secondary-foreground: 0 0% 0%;
+    --secondary: 262 83% 58%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 0 0% 96%;
     --muted-foreground: 0 0% 45%;
 
-    --accent: 210 100% 82%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 25 95% 63%;
+    --accent-foreground: 0 0% 10%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 90%;
+    --border: 0 0% 92%;
     --input: 0 0% 100%;
-    --ring: 210 100% 82%;
+    --ring: 217 91% 60%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
     /* Custom app colors */
-    --tabs-bg: 15 100% 89%;
-    --tab-active: 210 100% 82%;
+    --tabs-bg: 262 83% 98%;
+    --tab-active: 217 91% 60%;
     --tab-inactive: 0 0% 100%;
     
     /* Web3 colors */
@@ -58,18 +58,25 @@ All colors MUST be HSL.
     --badge-gold: 45 93% 58%;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(15 100% 95%), hsl(210 100% 95%));
-    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(0 0% 98%));
-    --gradient-glow: radial-gradient(circle at center, hsl(210 100% 82% / 0.1), transparent 70%);
-    --gradient-web3: linear-gradient(135deg, hsl(var(--web3-blue)), hsl(var(--web3-purple)));
-    --gradient-stats: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--web3-blue)) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(210 100% 97%) 0%, hsl(280 100% 98%) 50%, hsl(15 100% 96%) 100%);
+    --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+    --gradient-glow: radial-gradient(circle at center, hsl(217 91% 60% / 0.15), transparent 70%);
+    --gradient-web3: linear-gradient(135deg, hsl(217 91% 60%), hsl(262 83% 58%));
+    --gradient-stats: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(262 83% 58%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(210 100% 97%) 0%, hsl(280 100% 98%) 30%, hsl(217 91% 95%) 60%, hsl(15 100% 96%) 100%);
+    --gradient-mesh: 
+      radial-gradient(at 0% 0%, hsl(217 91% 60% / 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsl(262 83% 58% / 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsl(25 95% 63% / 0.1) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsl(217 91% 60% / 0.1) 0px, transparent 50%);
 
     /* Shadows */
-    --shadow-glow: 0 0 40px hsl(210 100% 82% / 0.2);
-    --shadow-card: 0 10px 30px -5px hsl(0 0% 0% / 0.1);
+    --shadow-glow: 0 0 60px hsl(217 91% 60% / 0.3), 0 0 100px hsl(262 83% 58% / 0.2);
+    --shadow-card: 0 20px 50px -12px hsl(217 91% 60% / 0.15), 0 0 0 1px hsl(217 91% 60% / 0.05);
+    --shadow-elegant: 0 10px 40px -10px hsl(217 91% 60% / 0.25);
     
     /* Animation */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     
     /* 3D Badge colors */
     --badge-common: 156 163 175;
@@ -89,38 +96,38 @@ All colors MUST be HSL.
 
   .dark {
     /* Dark Theme */
-    --background: linear-gradient(135deg, hsl(0 0% 5%), hsl(210 100% 10%));
-    --foreground: 0 0% 100%;
+    --background: linear-gradient(135deg, hsl(220 30% 6%) 0%, hsl(262 50% 8%) 50%, hsl(217 40% 7%) 100%);
+    --foreground: 0 0% 98%;
 
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 100%;
+    --card: 220 20% 10%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 220 20% 10%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 210 100% 82%;
-    --primary-foreground: 0 0% 0%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 15 100% 20%;
+    --secondary: 262 83% 58%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
+    --muted: 220 15% 15%;
+    --muted-foreground: 0 0% 70%;
 
-    --accent: 210 100% 82%;
-    --accent-foreground: 0 0% 0%;
+    --accent: 25 95% 63%;
+    --accent-foreground: 0 0% 10%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 15%;
-    --ring: 210 100% 82%;
+    --border: 220 15% 20%;
+    --input: 220 20% 12%;
+    --ring: 217 91% 60%;
 
     /* Custom app colors */
-    --tabs-bg: 15 100% 20%;
-    --tab-active: 210 100% 82%;
-    --tab-inactive: 0 0% 15%;
+    --tabs-bg: 262 30% 15%;
+    --tab-active: 217 91% 60%;
+    --tab-inactive: 220 20% 12%;
     
     /* Web3 colors */
     --web3-orange: 25 95% 63%;
@@ -136,15 +143,22 @@ All colors MUST be HSL.
     --badge-gold: 45 93% 58%;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(0 0% 5%), hsl(210 100% 10%));
-    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(0 0% 8%));
-    --gradient-glow: radial-gradient(circle at center, hsl(210 100% 82% / 0.2), transparent 70%);
-    --gradient-web3: linear-gradient(135deg, hsl(var(--web3-blue)), hsl(var(--web3-purple)));
-    --gradient-stats: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--web3-blue)) 100%);
+    --gradient-primary: linear-gradient(135deg, hsl(220 30% 6%) 0%, hsl(262 50% 8%) 50%, hsl(217 40% 7%) 100%);
+    --gradient-card: linear-gradient(145deg, rgba(30, 35, 50, 0.8), rgba(25, 28, 45, 0.6));
+    --gradient-glow: radial-gradient(circle at center, hsl(217 91% 60% / 0.2), transparent 70%);
+    --gradient-web3: linear-gradient(135deg, hsl(217 91% 60%), hsl(262 83% 58%));
+    --gradient-stats: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(262 83% 58%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(220 30% 6%) 0%, hsl(262 50% 8%) 30%, hsl(217 40% 7%) 60%, hsl(220 30% 6%) 100%);
+    --gradient-mesh: 
+      radial-gradient(at 0% 0%, hsl(217 91% 60% / 0.15) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsl(262 83% 58% / 0.15) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsl(25 95% 63% / 0.1) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsl(217 91% 60% / 0.1) 0px, transparent 50%);
 
     /* Shadows */
-    --shadow-glow: 0 0 40px hsl(210 100% 82% / 0.3);
-    --shadow-card: 0 10px 30px -5px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 80px hsl(217 91% 60% / 0.4), 0 0 120px hsl(262 83% 58% / 0.3);
+    --shadow-card: 0 20px 60px -15px hsl(217 91% 60% / 0.3), 0 0 0 1px hsl(217 91% 60% / 0.1);
+    --shadow-elegant: 0 10px 50px -10px hsl(217 91% 60% / 0.35);
 
     --sidebar-background: 0 0% 8%;
     --sidebar-foreground: 0 0% 100%;
@@ -164,7 +178,26 @@ All colors MUST be HSL.
 
   body {
     background: var(--gradient-primary);
+    background-attachment: fixed;
     color: hsl(var(--foreground));
     min-height: 100vh;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-mesh);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  #root {
+    position: relative;
+    z-index: 1;
   }
 }
