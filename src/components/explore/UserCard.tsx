@@ -20,6 +20,7 @@ interface User {
 
 interface UserCardProps {
   user: User;
+  onUserClick?: (user: User) => void;
 }
 
 // Function to get card theme based on user's achievements
@@ -75,11 +76,19 @@ const getCardTheme = (user: User) => {
   }
 };
 
-export const UserCard = ({ user }: UserCardProps) => {
+interface UserCardProps {
+  user: User;
+  onUserClick?: (user: User) => void;
+}
+
+export const UserCard = ({ user, onUserClick }: UserCardProps) => {
   const theme = getCardTheme(user);
   
   return (
-    <Card className={`group hover:shadow-xl transition-all duration-300 ${theme.border} bg-gradient-to-br ${theme.gradient} backdrop-blur-sm overflow-hidden relative`}>
+    <Card 
+      className={`group hover:shadow-xl transition-all duration-300 ${theme.border} bg-gradient-to-br ${theme.gradient} backdrop-blur-sm overflow-hidden relative cursor-pointer`}
+      onClick={() => onUserClick?.(user)}
+    >
       {/* Tier indicator */}
       <div className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-semibold ${theme.accent} bg-background/80 backdrop-blur-sm border ${theme.border}`}>
         {theme.tier.charAt(0).toUpperCase() + theme.tier.slice(1)}

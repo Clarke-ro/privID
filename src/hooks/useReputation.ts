@@ -112,25 +112,32 @@ export const useReputation = () => {
   }, [isConnected, getReputationContract, fetchReputation]);
 
   const togglePublicSharing = useCallback(async () => {
-    if (!isConnected) {
+    if (!isConnected || !account) {
       toast.error('Please connect your wallet first');
       return;
     }
 
     try {
-      // Mock the toggle behavior for demo purposes
-      console.log('Toggling public sharing preference...');
+      const contract = getReputationContract();
+      const newPublicStatus = !isPublic;
       
-      // Simulate a brief delay as if calling a contract
-      await new Promise(resolve => setTimeout(resolve, 500));
+      toast.info('Submitting transaction...');
+      const tx = await contract.setPublicSharing(newPublicStatus);
       
-      setIsPublic(!isPublic);
-      toast.success(`Reputation is now ${!isPublic ? 'public' : 'private'}`);
-    } catch (error) {
+      toast.info('Waiting for confirmation...');
+      await tx.wait();
+      
+      setIsPublic(newPublicStatus);
+      toast.success(`Reputation visibility set to ${newPublicStatus ? 'public' : 'private'}`);
+    } catch (error: any) {
       console.error('Failed to toggle public sharing:', error);
-      toast.error('Failed to update preference. Please try again.');
+      if (error.code === 4001) {
+        toast.error('Transaction rejected by user');
+      } else {
+        toast.error('Failed to update visibility settings');
+      }
     }
-  }, [isConnected, isPublic]);
+  }, [isConnected, account, isPublic, getReputationContract]);
 
   useEffect(() => {
     if (isConnected && account) {

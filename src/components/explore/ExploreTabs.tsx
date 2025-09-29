@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { UserCard } from './UserCard';
 import { PostCard } from './PostCard';
+import { UserProfileView } from './UserProfileView';
 import { Search, Users, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -151,9 +152,35 @@ const mockPosts = [
   }
 ];
 
+interface User {
+  id: string;
+  name: string;
+  role: string;
+  avatar?: string;
+  reputation?: number;
+  showReputation: boolean;
+  badge?: string;
+  description: string;
+  location?: string;
+  skills?: string[];
+  projectsCompleted?: number;
+}
+
 export const ExploreTabs = () => {
   const [userSearchQuery, setUserSearchQuery] = useState('');
   const [selectedSkillFilter, setSelectedSkillFilter] = useState<string>('');
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isProfileViewOpen, setIsProfileViewOpen] = useState(false);
+
+  const handleUserClick = (user: User) => {
+    setSelectedUser(user);
+    setIsProfileViewOpen(true);
+  };
+
+  const handleCloseProfileView = () => {
+    setIsProfileViewOpen(false);
+    setTimeout(() => setSelectedUser(null), 300);
+  };
 
   // Filter users based on search query and skills
   const filteredUsers = mockUsers.filter(user => {
@@ -171,7 +198,14 @@ export const ExploreTabs = () => {
   const allSkills = Array.from(new Set(mockUsers.flatMap(user => user.skills || [])));
 
   return (
-    <Tabs defaultValue="posts" className="w-full">
+    <>
+      <UserProfileView 
+        user={selectedUser}
+        isOpen={isProfileViewOpen}
+        onClose={handleCloseProfileView}
+      />
+      
+      <Tabs defaultValue="posts" className="w-full">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="posts">Posts</TabsTrigger>
         <TabsTrigger value="users" className="flex items-center gap-2">
@@ -239,7 +273,7 @@ export const ExploreTabs = () => {
         <div className="grid gap-6">
           {filteredUsers.length > 0 ? (
             filteredUsers.map((user) => (
-              <UserCard key={user.id} user={user} />
+              <UserCard key={user.id} user={user} onUserClick={handleUserClick} />
             ))
           ) : (
             <div className="text-center py-12">
@@ -252,6 +286,7 @@ export const ExploreTabs = () => {
           )}
         </div>
       </TabsContent>
-    </Tabs>
+      </Tabs>
+    </>
   );
 };
