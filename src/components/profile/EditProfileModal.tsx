@@ -23,6 +23,7 @@ export const EditProfileModal = ({ children }: EditProfileModalProps) => {
     role: profile.role,
     about: profile.about,
     avatar: profile.avatar,
+    banner: profile.banner,
   });
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,6 +33,17 @@ export const EditProfileModal = ({ children }: EditProfileModalProps) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         setFormData(prev => ({ ...prev, avatar: e.target?.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBannerUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFormData(prev => ({ ...prev, banner: e.target?.result as string }));
       };
       reader.readAsDataURL(file);
     }
@@ -78,6 +90,7 @@ export const EditProfileModal = ({ children }: EditProfileModalProps) => {
         role: profile.role,
         about: profile.about,
         avatar: profile.avatar,
+        banner: profile.banner,
       });
     }
   };
@@ -94,6 +107,34 @@ export const EditProfileModal = ({ children }: EditProfileModalProps) => {
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Banner Upload */}
+          <div className="space-y-2">
+            <Label htmlFor="edit-banner">Profile Banner</Label>
+            <div className="relative">
+              <div 
+                className="w-full h-24 bg-cover bg-center bg-no-repeat rounded-lg border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors cursor-pointer"
+                style={{
+                  backgroundImage: formData.banner ? `url(${formData.banner})` : 'none',
+                  backgroundColor: !formData.banner ? 'hsl(var(--muted))' : 'transparent'
+                }}
+              >
+                <Label htmlFor="edit-banner" className="cursor-pointer w-full h-full flex items-center justify-center">
+                  <div className="flex flex-col items-center space-y-1 text-xs text-muted-foreground">
+                    <Upload className="w-4 h-4" />
+                    <span>{formData.banner ? 'Change Banner' : 'Upload Banner'}</span>
+                  </div>
+                </Label>
+              </div>
+              <Input
+                id="edit-banner"
+                type="file"
+                accept="image/*"
+                onChange={handleBannerUpload}
+                className="hidden"
+              />
+            </div>
+          </div>
+
           {/* Avatar Upload */}
           <div className="flex flex-col items-center space-y-4">
             <Avatar className="w-20 h-20">

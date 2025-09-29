@@ -5,6 +5,7 @@ export interface UserProfile {
   role: string;
   about: string;
   avatar: string;
+  banner: string;
 }
 
 const DEFAULT_PROFILE: UserProfile = {
@@ -12,6 +13,7 @@ const DEFAULT_PROFILE: UserProfile = {
   role: '',
   about: '',
   avatar: '',
+  banner: '',
 };
 
 export const useUserProfile = () => {

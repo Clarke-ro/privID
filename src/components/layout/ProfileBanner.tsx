@@ -4,7 +4,7 @@ import { CheckCircle2 } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { useReputation } from '@/hooks/useReputation';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import bannerBg from '@/assets/dashboard-banner.png';
+import defaultBanner from '@/assets/dashboard-banner.png';
 
 export const ProfileBanner = () => {
   const { account } = useWeb3();
@@ -13,6 +13,7 @@ export const ProfileBanner = () => {
 
   const displayAccount = account || "0x1234...5678";
   const displayReputation = reputation?.total || 0;
+  const bannerImage = profile.banner || defaultBanner;
 
   return (
     <div className="relative">
@@ -20,7 +21,7 @@ export const ProfileBanner = () => {
       <div 
         className="h-48 bg-cover bg-center bg-no-repeat rounded-t-2xl"
         style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(${bannerBg})`
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(${bannerImage})`
         }}
       />
       
