@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatDistance } from 'date-fns';
 
-interface Message {
+export interface Message {
   id: string;
   sender: {
     name: string;
@@ -14,6 +14,10 @@ interface Message {
   timestamp: Date;
   unread: boolean;
   type: 'direct' | 'group' | 'system';
+}
+
+interface MessagesListProps {
+  onMessageClick: (message: Message) => void;
 }
 
 const mockMessages: Message[] = [
@@ -79,7 +83,7 @@ const mockMessages: Message[] = [
   }
 ];
 
-export const MessagesList = () => {
+export const MessagesList = ({ onMessageClick }: MessagesListProps) => {
   const getMessageTypeColor = (type: string) => {
     switch (type) {
       case 'group':
@@ -96,6 +100,7 @@ export const MessagesList = () => {
       {mockMessages.map((message) => (
         <Card 
           key={message.id} 
+          onClick={() => onMessageClick(message)}
           className={`cursor-pointer hover:shadow-md transition-shadow ${
             message.unread ? 'border-primary/50 bg-primary/5' : ''
           }`}
