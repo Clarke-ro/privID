@@ -6,6 +6,7 @@ import { HorizontalTabs } from '@/components/layout/HorizontalTabs';
 import { PortfolioBalance } from '@/components/portfolio/PortfolioBalance';
 import { MyCards } from '@/components/portfolio/MyCards';
 import { MyHoldings } from '@/components/portfolio/MyHoldings';
+import { ClaimedBadges } from '@/components/portfolio/ClaimedBadges';
 
 const Portfolio = () => {
   return (
@@ -21,6 +22,7 @@ const Portfolio = () => {
           <main className="flex-1 p-6 bg-muted/20">
             <div className="max-w-6xl mx-auto space-y-8">
               <PortfolioBalance />
+              <ClaimedBadges />
               <MyCards />
               <MyHoldings />
             </div>

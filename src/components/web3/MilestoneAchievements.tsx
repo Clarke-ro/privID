@@ -1,13 +1,22 @@
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Award, Trophy, Crown, Star, CheckCircle2 } from 'lucide-react';
 import { useReputation } from '@/hooks/useReputation';
+import { useUserProfile } from '@/hooks/useUserProfile';
+import { Badge3D } from './Badge3D';
+import { ClaimBadgeModal } from './ClaimBadgeModal';
+import { toast } from '@/hooks/use-toast';
 
 export const MilestoneAchievements = () => {
   const { reputation } = useReputation();
+  const { profile, claimBadge } = useUserProfile();
+  const [claimingBadge, setClaimingBadge] = useState<typeof achievements[0] | null>(null);
 
   const currentScore = reputation?.total || 0;
+  const claimedBadgeIds = profile?.claimedBadges?.map(b => b.id) || [];
 
   const achievements = [
     {
@@ -92,6 +101,27 @@ export const MilestoneAchievements = () => {
     }
   };
 
+  const handleClaim = (achievement: typeof achievements[0]) => {
+    setClaimingBadge(achievement);
+  };
+
+  const handleClaimed = () => {
+    if (claimingBadge) {
+      claimBadge({
+        id: claimingBadge.id,
+        title: claimingBadge.title,
+        description: claimingBadge.description,
+        tier: claimingBadge.tier,
+        iconName: claimingBadge.icon.name,
+        claimedAt: new Date().toISOString(),
+      });
+      toast({
+        title: 'Badge Claimed!',
+        description: `${claimingBadge.title} has been added to your portfolio.`,
+      });
+    }
+  };
+
   // Next milestone progress
   const nextMilestone = achievements.find(a => !a.completed && currentScore < a.threshold);
   const progress = nextMilestone ? (currentScore / nextMilestone.threshold) * 100 : 100;
@@ -107,7 +137,9 @@ export const MilestoneAchievements = () => {
         {/* Achievement Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {achievements.map((achievement) => {
-            const Icon = achievement.icon;
+            const isClaimed = claimedBadgeIds.includes(achievement.id);
+            const canClaim = achievement.completed && !isClaimed;
+            
             return (
               <div
                 key={achievement.id}
@@ -117,17 +149,20 @@ export const MilestoneAchievements = () => {
                     : 'border-border bg-card'
                 }`}
               >
-                {achievement.completed && (
+                {isClaimed && (
                   <CheckCircle2 className="absolute top-2 right-2 w-5 h-5 text-web3-success" />
                 )}
                 
-                <div className="text-center space-y-2">
-                  <div className={`inline-flex p-3 rounded-full ${
-                    achievement.completed ? 'bg-web3-success/20' : 'bg-muted'
-                  }`}>
-                    <Icon className={`w-6 h-6 ${
-                      achievement.completed ? 'text-web3-success' : 'text-muted-foreground'
-                    }`} />
+                <div className="text-center space-y-3">
+                  {/* 3D Badge Preview */}
+                  <div className="flex justify-center">
+                    <Badge3D
+                      tier={achievement.tier}
+                      icon={achievement.icon}
+                      title=""
+                      size="sm"
+                      className={!achievement.completed ? 'opacity-40 grayscale' : ''}
+                    />
                   </div>
                   
                   <div>
@@ -140,6 +175,21 @@ export const MilestoneAchievements = () => {
                   <Badge className={`${getTierColor(achievement.tier)} text-xs`}>
                     {achievement.tier}
                   </Badge>
+
+                  {/* Claim Button */}
+                  {canClaim && (
+                    <Button
+                      size="sm"
+                      onClick={() => handleClaim(achievement)}
+                      className="w-full mt-2 bg-gradient-to-r from-web3-orange to-web3-blue hover:opacity-90"
+                    >
+                      Claim Badge
+                    </Button>
+                  )}
+                  
+                  {isClaimed && (
+                    <p className="text-xs text-web3-success">Claimed ✓</p>
+                  )}
                 </div>
               </div>
             );
@@ -169,6 +219,16 @@ export const MilestoneAchievements = () => {
               <Progress value={progress} className="h-2" />
             </div>
           </div>
+        )}
+
+        {/* Claim Badge Modal */}
+        {claimingBadge && (
+          <ClaimBadgeModal
+            isOpen={!!claimingBadge}
+            onClose={() => setClaimingBadge(null)}
+            achievement={claimingBadge}
+            onClaimed={handleClaimed}
+          />
         )}
       </CardContent>
     </Card>

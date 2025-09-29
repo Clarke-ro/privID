@@ -1,11 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
 
+export interface ClaimedBadge {
+  id: string;
+  title: string;
+  description: string;
+  tier: string;
+  iconName: string;
+  claimedAt: string;
+}
+
 export interface UserProfile {
   name: string;
   role: string;
   about: string;
   avatar: string;
   banner: string;
+  claimedBadges?: ClaimedBadge[];
 }
 
 const DEFAULT_PROFILE: UserProfile = {
@@ -54,10 +64,26 @@ export const useUserProfile = () => {
     localStorage.removeItem('userProfile');
   }, []);
 
+  // Claim badge
+  const claimBadge = useCallback((badge: ClaimedBadge) => {
+    const claimedBadges = profile.claimedBadges || [];
+    // Check if badge already claimed
+    if (claimedBadges.some(b => b.id === badge.id)) {
+      return;
+    }
+    const updated = {
+      ...profile,
+      claimedBadges: [...claimedBadges, badge],
+    };
+    setProfile(updated);
+    localStorage.setItem('userProfile', JSON.stringify(updated));
+  }, [profile]);
+
   return {
     profile,
     isLoading,
     updateProfile,
     resetProfile,
+    claimBadge,
   };
 };
