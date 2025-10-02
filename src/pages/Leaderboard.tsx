@@ -285,25 +285,24 @@ const Leaderboard = () => {
 
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <h4 className="font-semibold">{entry.name}</h4>
+                              <h4 className="font-semibold">{entry.rank}. {entry.name}</h4>
                               {entry.rank <= 3 && (
                                 <Badge variant="outline" className="bg-gradient-primary border-web3-orange">
                                   {entry.rank === 1 ? 'Legend' : entry.rank === 2 ? 'Champion' : 'Elite'}
                                 </Badge>
                               )}
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <span>Score: {entry.score.toLocaleString()}</span>
-                              {entry.change !== 0 && (
+                            {entry.change !== 0 && (
+                              <div className="text-sm text-muted-foreground">
                                 <span className={entry.change > 0 ? 'text-green-500' : 'text-red-500'}>
                                   {entry.change > 0 ? '↑' : '↓'} {Math.abs(entry.change)}
                                 </span>
-                              )}
-                            </div>
+                              </div>
+                            )}
                           </div>
 
                           <div className="text-right">
-                            <div className="text-2xl font-bold text-web3-orange">#{entry.rank}</div>
+                            <div className="text-2xl font-bold text-web3-orange">{entry.score.toLocaleString()}</div>
                           </div>
                         </div>
                       ))}
