@@ -273,6 +273,9 @@ export const useWeb3 = () => {
   // Authenticate or create user with wallet
   const authenticateWithWallet = useCallback(async (walletAddress: string) => {
     try {
+      // Check if user is already authenticated
+      const { data: { session } } = await supabase.auth.getSession();
+      
       // Check if profile exists
       const { data: existingProfile } = await supabase
         .from('profiles')
@@ -281,23 +284,52 @@ export const useWeb3 = () => {
         .maybeSingle();
 
       if (existingProfile) {
-        // User exists, sign in anonymously and link to existing profile
-        const { data: authData, error: signInError } = await supabase.auth.signInAnonymously();
-        
-        if (signInError) throw signInError;
+        // Profile exists
+        if (!session) {
+          // Not authenticated, sign in anonymously
+          const { data: authData, error: signInError } = await supabase.auth.signInAnonymously();
+          
+          if (signInError) {
+            if (signInError.message.includes('rate_limit')) {
+              console.log('Rate limited, but profile exists - continuing');
+              toast.success(`Welcome back, ${existingProfile.username}!`);
+              return existingProfile;
+            }
+            throw signInError;
+          }
+        }
         
         console.log('Existing user authenticated:', existingProfile.username);
         toast.success(`Welcome back, ${existingProfile.username}!`);
         return existingProfile;
       }
 
-      // New user - create anonymous account
-      const { data: authData, error: signUpError } = await supabase.auth.signInAnonymously();
+      // New user - check if already have a session
+      if (!session) {
+        const { data: authData, error: signUpError } = await supabase.auth.signInAnonymously();
+        
+        if (signUpError) {
+          if (signUpError.message.includes('rate_limit')) {
+            toast.error('Too many signup attempts. Please wait a moment and try again.');
+            return null;
+          }
+          throw signUpError;
+        }
+        
+        if (!authData.user) {
+          throw new Error('Failed to create user account');
+        }
+      } else {
+        // Use existing session
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          throw new Error('No authenticated user');
+        }
+      }
       
-      if (signUpError) throw signUpError;
-      
-      if (!authData.user) {
-        throw new Error('Failed to create user account');
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        throw new Error('Failed to get authenticated user');
       }
 
       // Generate username via edge function
@@ -311,7 +343,7 @@ export const useWeb3 = () => {
       const { data: newProfile, error: profileError } = await supabase
         .from('profiles')
         .insert({
-          id: authData.user.id,
+          id: user.id,
           wallet_address: walletAddress.toLowerCase(),
           username: usernameData.username,
         })
@@ -338,7 +370,7 @@ export const useWeb3 = () => {
       await supabase
         .from('user_roles')
         .insert({
-          user_id: authData.user.id,
+          user_id: user.id,
           role: 'user',
         });
 
