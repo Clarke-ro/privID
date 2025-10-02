@@ -11,62 +11,7 @@ export interface AirdropItem {
 }
 
 export const useAirdrops = () => {
-  const [airdrops, setAirdrops] = useState<AirdropItem[]>([
-    {
-      id: '1',
-      name: 'LearnUIto',
-      url: 'https://centmalevel.com',
-      type: 'NFT',
-      eligibility: 'eligible',
-      datePeriod: '2024-01-01 to 2024-12-31',
-      dateAdded: '25 May 2020'
-    },
-    {
-      id: '2',
-      name: 'Design-Pictures',
-      url: 'https://main.level.com',
-      type: 'NFT',
-      eligibility: 'eligible',
-      datePeriod: '2024-03-01 to 2024-11-30',
-      dateAdded: '75 May 2023'
-    },
-    {
-      id: '3',
-      name: 'UI/UX designer',
-      url: 'https://bylayer.level.com',
-      type: 'Game',
-      eligibility: 'eligible',
-      datePeriod: '2024-02-15 to 2024-10-15',
-      dateAdded: '25 May 2023'
-    },
-    {
-      id: '4',
-      name: 'Node.js pdf',
-      url: 'https://graphics.level.com',
-      type: 'Tool',
-      eligibility: 'ineligible',
-      datePeriod: '2024-01-15 to 2024-09-15',
-      dateAdded: '25 May 2023'
-    },
-    {
-      id: '5',
-      name: 'Weekly Report',
-      url: 'https://bylayer.level.com',
-      type: 'Tool',
-      eligibility: 'unknown',
-      datePeriod: '2024-04-01 to 2024-12-01',
-      dateAdded: '25 May 2023'
-    },
-    {
-      id: '6',
-      name: 'DeFi Protocol Alpha',
-      url: 'https://defi-alpha.com',
-      type: 'DeFi',
-      eligibility: 'unknown',
-      datePeriod: '2024-06-01 to 2024-12-15',
-      dateAdded: '15 Jun 2024'
-    }
-  ]);
+  const [airdrops, setAirdrops] = useState<AirdropItem[]>([]);
 
   const [activities, setActivities] = useState<any[]>([]);
 

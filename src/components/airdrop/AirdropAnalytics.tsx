@@ -25,50 +25,7 @@ interface AirdropAnalyticsProps {
 
 export const AirdropAnalytics = ({ counts, activities = [] }: AirdropAnalyticsProps) => {
 
-  const defaultActivities: ActivityItem[] = [
-    {
-      id: '1',
-      action: 'Added airdrop',
-      target: 'LearnUIto',
-      time: 'Just now',
-      iconName: 'Plus',
-      iconColor: 'bg-blue-500'
-    },
-    {
-      id: '2',
-      action: 'Changed status to eligible',
-      target: 'Design-Pictures',
-      time: '2 hours ago',
-      iconName: 'CheckCircle',
-      iconColor: 'bg-green-500'
-    },
-    {
-      id: '3',
-      action: 'Changed status to ineligible',
-      target: 'Node.js pdf',
-      time: '1 day ago',
-      iconName: 'XCircle',
-      iconColor: 'bg-red-500'
-    },
-    {
-      id: '4',
-      action: 'Deleted airdrop',
-      target: 'Old Protocol',
-      time: '2 days ago',
-      iconName: 'Trash2',
-      iconColor: 'bg-red-500'
-    },
-    {
-      id: '5',
-      action: 'Added airdrop',
-      target: 'DeFi Protocol Alpha',
-      time: '3 days ago',
-      iconName: 'Plus',
-      iconColor: 'bg-blue-500'
-    }
-  ];
-
-  const displayActivities = (activities && activities.length > 0) ? activities : defaultActivities;
+  const displayActivities = activities || [];
 
   const getIconComponent = (iconName: string) => {
     switch (iconName) {
@@ -152,20 +109,28 @@ export const AirdropAnalytics = ({ counts, activities = [] }: AirdropAnalyticsPr
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {displayActivities.map((activity) => (
-              <div key={activity.id} className="flex items-start gap-3">
-                <div className={`w-6 h-6 rounded-full ${activity.iconColor} flex items-center justify-center text-white flex-shrink-0`}>
-                  {getIconComponent(activity.iconName)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm">
-                    <span className="text-muted-foreground">{activity.action}</span>{' '}
-                    <span className="font-medium">{activity.target}</span>
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">{activity.time}</p>
-                </div>
+            {displayActivities.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Clock className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">No activity yet</p>
+                <p className="text-xs mt-1">Start by adding your first airdrop</p>
               </div>
-            ))}
+            ) : (
+              displayActivities.map((activity) => (
+                <div key={activity.id} className="flex items-start gap-3">
+                  <div className={`w-6 h-6 rounded-full ${activity.iconColor} flex items-center justify-center text-white flex-shrink-0`}>
+                    {getIconComponent(activity.iconName)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm">
+                      <span className="text-muted-foreground">{activity.action}</span>{' '}
+                      <span className="font-medium">{activity.target}</span>
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">{activity.time}</p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>

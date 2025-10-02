@@ -30,7 +30,7 @@ const Airdrop = () => {
           <ProfileBanner />
           <HorizontalTabs />
           
-          <main className="flex-1 p-6 bg-muted/20">
+          <main className="flex-1 p-6 bg-gradient-to-br from-background via-muted/5 to-primary/5">
             <div className="max-w-7xl mx-auto">
               <div className="flex gap-6">
                 {/* Left Sidebar */}

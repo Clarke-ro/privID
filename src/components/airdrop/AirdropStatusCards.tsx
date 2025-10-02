@@ -11,18 +11,18 @@ interface StatusCardProps {
 }
 
 const StatusCard = ({ title, count, subtitle, icon, iconColor }: StatusCardProps) => (
-  <Card className="bg-card border-border hover:shadow-md transition-all cursor-pointer">
+  <Card className="bg-gradient-to-br from-card to-card/50 border-primary/10 hover:border-primary/30 hover:shadow-glow transition-all cursor-pointer group">
     <CardContent className="p-6">
       <div className="flex items-center justify-between mb-4">
-        <div className={`w-8 h-8 rounded-lg ${iconColor} flex items-center justify-center`}>
+        <div className={`w-10 h-10 rounded-xl ${iconColor} flex items-center justify-center backdrop-blur-sm group-hover:scale-110 transition-transform`}>
           {icon}
         </div>
-        <Badge variant="secondary" className="text-xs">
-          {count} Active
+        <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20">
+          {count}
         </Badge>
       </div>
-      <h3 className="text-lg font-semibold mb-1">{title}</h3>
-      <p className="text-sm text-muted-foreground">{subtitle}</p>
+      <h3 className="text-2xl font-bold mb-1">{count}</h3>
+      <p className="text-sm text-muted-foreground">{title}</p>
     </CardContent>
   </Card>
 );
@@ -39,25 +39,25 @@ export const AirdropStatusCards = ({ counts }: AirdropStatusCardsProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <StatusCard
-        title="Active"
+        title="Active Airdrops"
         count={counts.active}
-        subtitle={`${counts.active} Active`}
-        icon={<Play className="w-4 h-4 text-green-600" />}
-        iconColor="bg-green-100"
+        subtitle="Currently tracking"
+        icon={<Play className="w-5 h-5 text-emerald-500" />}
+        iconColor="bg-emerald-500/10"
       />
       <StatusCard
-        title="Collected"
+        title="Eligible"
         count={counts.collected}
-        subtitle={`${counts.collected} Active`}
-        icon={<FolderOpen className="w-4 h-4 text-yellow-600" />}
-        iconColor="bg-yellow-100"
+        subtitle="Ready to collect"
+        icon={<FolderOpen className="w-5 h-5 text-amber-500" />}
+        iconColor="bg-amber-500/10"
       />
       <StatusCard
-        title="Yet to Interact"
+        title="Pending Review"
         count={counts.yetToInteract}
-        subtitle="Yet to interact"
-        icon={<Clock className="w-4 h-4 text-blue-600" />}
-        iconColor="bg-blue-100"
+        subtitle="Needs attention"
+        icon={<Clock className="w-5 h-5 text-blue-500" />}
+        iconColor="bg-blue-500/10"
       />
     </div>
   );
