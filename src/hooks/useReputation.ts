@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useWeb3 } from './useWeb3';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ReputationBreakdown {
   balance: number;
@@ -70,6 +71,23 @@ export const useReputation = () => {
       setReputation(mockReputationData);
       setIsPublic(true); // Default to public sharing
       setIsRegistered(true);
+      
+      // Sync scores to database
+      try {
+        await supabase.functions.invoke('update-scores', {
+          body: {
+            walletAddress: account.toLowerCase(),
+            balanceScore: mockReputationData.balance,
+            transfersScore: mockReputationData.transfers,
+            liquidityScore: mockReputationData.liquidity,
+            governanceScore: mockReputationData.governance,
+          }
+        });
+        console.log('Scores synced to database');
+      } catch (error) {
+        console.error('Error syncing scores:', error);
+      }
+      
       toast.success('Reputation score loaded successfully');
       
     } catch (error) {

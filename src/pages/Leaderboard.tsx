@@ -1,18 +1,22 @@
-import { useState } from 'react';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/layout/Sidebar';
-import { Header } from '@/components/layout/Header';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar } from '@/components/ui/avatar';
-import { Trophy, Medal, Crown, TrendingUp, Users, Award } from 'lucide-react';
+import { Crown, Trophy, Medal, TrendingUp, Users, Award } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Header } from "@/components/layout/Header";
+import { AppSidebar } from "@/components/layout/Sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { MobileLayout } from "@/components/layout/MobileLayout";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const getRankIcon = (rank: number) => {
-  if (rank === 1) return <Crown className="w-6 h-6 text-badge-gold" />;
-  if (rank === 2) return <Trophy className="w-6 h-6 text-badge-silver" />;
-  if (rank === 3) return <Medal className="w-6 h-6 text-badge-bronze" />;
-  return <span className="w-6 h-6 flex items-center justify-center text-muted-foreground font-bold">{rank}</span>;
+  if (rank === 1) return <Crown className="w-6 h-6 text-web3-orange" />;
+  if (rank === 2) return <Trophy className="w-6 h-6 text-web3-blue" />;
+  if (rank === 3) return <Medal className="w-6 h-6 text-web3-purple" />;
+  return rank;
 };
 
 interface LeaderboardEntry {
@@ -24,64 +28,135 @@ interface LeaderboardEntry {
   avatar?: string;
 }
 
-export default function Leaderboard() {
-  const [leaderboardData] = useState<LeaderboardEntry[]>([]);
+const Leaderboard = () => {
   const isMobile = useIsMobile();
+  const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    avgScore: 0,
+    topScore: 0,
+  });
+
+  useEffect(() => {
+    const fetchLeaderboard = async () => {
+      try {
+        setIsLoading(true);
+        
+        const { data: scores, error } = await supabase
+          .from('leaderboard_scores')
+          .select(`
+            *,
+            profiles!inner (
+              username,
+              avatar_url
+            )
+          `)
+          .order('total_score', { ascending: false })
+          .limit(100);
+
+        if (error) throw error;
+
+        const formattedData: LeaderboardEntry[] = scores.map((score: any, index: number) => ({
+          id: score.id,
+          name: score.profiles.username,
+          score: score.total_score,
+          rank: score.rank || index + 1,
+          change: 0,
+          avatar: score.profiles.avatar_url,
+        }));
+
+        setLeaderboardData(formattedData);
+
+        // Calculate stats
+        if (formattedData.length > 0) {
+          const totalScore = formattedData.reduce((sum, entry) => sum + entry.score, 0);
+          setStats({
+            totalUsers: formattedData.length,
+            avgScore: Math.floor(totalScore / formattedData.length),
+            topScore: formattedData[0]?.score || 0,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching leaderboard:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLeaderboard();
+
+    // Subscribe to real-time updates
+    const channel = supabase
+      .channel('leaderboard-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'leaderboard_scores'
+        },
+        () => {
+          fetchLeaderboard();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   if (isMobile) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="space-y-6 p-6">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-              <Trophy className="w-8 h-8 text-primary" />
-              Leaderboard
-            </h1>
-            <p className="text-muted-foreground">
-              Track top performers and compete for the lead
-            </p>
+      <MobileLayout>
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Leaderboard</h1>
+            <p className="text-muted-foreground">Top performers in the community</p>
           </div>
 
-          <Card className="bg-gradient-to-br from-card to-card/50 border-primary/10">
+          <Card className="bg-gradient-card border-border">
             <CardHeader>
-              <CardTitle>Global Rankings</CardTitle>
-              <CardDescription>Real-time reputation leaderboard</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Trophy className="h-5 w-5 text-web3-orange" />
+                Rankings
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              {leaderboardData.length === 0 ? (
-                <div className="text-center py-12">
-                  <Users className="w-16 h-16 mx-auto text-muted-foreground/40 mb-4" />
-                  <h3 className="text-lg font-medium mb-2">No Rankings Yet</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Be the first to build your reputation and claim the top spot
-                  </p>
+              {isLoading ? (
+                <div className="space-y-4">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex items-center gap-4">
+                      <Skeleton className="w-8 h-8 rounded-full" />
+                      <Skeleton className="w-8 h-8 rounded-full" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-4 w-24" />
+                        <Skeleton className="h-3 w-16" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : leaderboardData.length === 0 ? (
+                <div className="text-center py-8">
+                  <Trophy className="h-12 w-12 mx-auto mb-3 text-muted-foreground/50" />
+                  <p className="text-sm text-muted-foreground">No rankings yet</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {leaderboardData.map((entry) => (
-                    <div
-                      key={entry.id}
-                      className="flex items-center gap-4 p-4 rounded-lg border bg-card/50 hover:bg-card transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
+                    <div key={entry.id} className="flex items-center gap-3 p-3 rounded-lg bg-background/50">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-card border border-border font-bold">
                         {getRankIcon(entry.rank)}
-                        <Avatar className="w-10 h-10 bg-muted">
-                          <span className="text-lg">{entry.avatar || '👤'}</span>
-                        </Avatar>
                       </div>
-                      
+                      <Avatar className="h-8 w-8 border border-web3-orange">
+                        <AvatarImage src={entry.avatar} />
+                        <AvatarFallback>{entry.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                      </Avatar>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{entry.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {entry.score.toLocaleString()} points
-                        </p>
+                        <p className="font-medium text-sm truncate">{entry.name}</p>
+                        <p className="text-xs text-muted-foreground">{entry.score.toLocaleString()}</p>
                       </div>
-                      
-                      {entry.change !== 0 && (
-                        <Badge variant={entry.change > 0 ? 'default' : 'secondary'} className="text-xs">
-                          {entry.change > 0 ? '+' : ''}{entry.change}
-                        </Badge>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -89,133 +164,147 @@ export default function Leaderboard() {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </MobileLayout>
     );
   }
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
+      <div className="min-h-screen flex w-full">
         <AppSidebar />
-        
         <div className="flex-1 flex flex-col">
           <Header />
-          
-          <main className="flex-1 p-6 bg-gradient-to-br from-background via-muted/5 to-primary/5">
-            <div className="max-w-5xl mx-auto space-y-6">
-              <div className="space-y-2">
-                <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-                  <Trophy className="w-8 h-8 text-primary" />
+          <main className="flex-1 p-8 overflow-auto">
+            <div className="max-w-6xl mx-auto space-y-6">
+              <div>
+                <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
+                  <Trophy className="h-10 w-10 text-web3-orange" />
                   Global Leaderboard
                 </h1>
-                <p className="text-muted-foreground">
-                  Track top performers and compete for the lead
-                </p>
+                <p className="text-muted-foreground">Track top performers and compete for the lead</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="bg-gradient-to-br from-badge-gold/10 to-badge-gold/5 border-badge-gold/20 hover:shadow-glow transition-all">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-badge-gold/20 flex items-center justify-center">
-                        <Crown className="w-6 h-6 text-badge-gold" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold">0</p>
-                        <p className="text-sm text-muted-foreground">Gold Members</p>
-                      </div>
-                    </div>
+              <div className="grid gap-4 md:grid-cols-3 mb-6">
+                <Card className="bg-gradient-card border-border hover:border-web3-orange transition-colors">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Members</CardTitle>
+                    <Users className="h-4 w-4 text-web3-orange" />
+                  </CardHeader>
+                  <CardContent>
+                    {isLoading ? (
+                      <Skeleton className="h-8 w-20" />
+                    ) : (
+                      <>
+                        <div className="text-2xl font-bold">{stats.totalUsers}</div>
+                        <p className="text-xs text-muted-foreground">Registered on platform</p>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-badge-silver/10 to-badge-silver/5 border-badge-silver/20 hover:shadow-glow transition-all">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-badge-silver/20 flex items-center justify-center">
-                        <Medal className="w-6 h-6 text-badge-silver" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold">0</p>
-                        <p className="text-sm text-muted-foreground">Silver Members</p>
-                      </div>
-                    </div>
+                <Card className="bg-gradient-card border-border hover:border-web3-blue transition-colors">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Average Score</CardTitle>
+                    <TrendingUp className="h-4 w-4 text-web3-blue" />
+                  </CardHeader>
+                  <CardContent>
+                    {isLoading ? (
+                      <Skeleton className="h-8 w-20" />
+                    ) : (
+                      <>
+                        <div className="text-2xl font-bold">{stats.avgScore.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground">Community average</p>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gradient-to-br from-badge-bronze/10 to-badge-bronze/5 border-badge-bronze/20 hover:shadow-glow transition-all">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-badge-bronze/20 flex items-center justify-center">
-                        <Award className="w-6 h-6 text-badge-bronze" />
-                      </div>
-                      <div>
-                        <p className="text-2xl font-bold">0</p>
-                        <p className="text-sm text-muted-foreground">Bronze Members</p>
-                      </div>
-                    </div>
+                <Card className="bg-gradient-card border-border hover:border-web3-purple transition-colors">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Top Score</CardTitle>
+                    <Award className="h-4 w-4 text-web3-purple" />
+                  </CardHeader>
+                  <CardContent>
+                    {isLoading ? (
+                      <Skeleton className="h-8 w-20" />
+                    ) : (
+                      <>
+                        <div className="text-2xl font-bold">{stats.topScore.toLocaleString()}</div>
+                        <p className="text-xs text-muted-foreground">Highest achievement</p>
+                      </>
+                    )}
                   </CardContent>
                 </Card>
               </div>
 
-              <Card className="bg-gradient-to-br from-card to-card/50 border-primary/10">
+              <Card className="bg-gradient-card border-border">
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-primary" />
-                        Top Performers
-                      </CardTitle>
-                      <CardDescription className="mt-2">
-                        Real-time reputation rankings
-                      </CardDescription>
-                    </div>
-                  </div>
+                  <CardTitle className="text-2xl font-bold flex items-center gap-2">
+                    <Trophy className="h-6 w-6 text-web3-orange" />
+                    Global Rankings
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {leaderboardData.length === 0 ? (
-                    <div className="text-center py-20">
-                      <Users className="w-20 h-20 mx-auto text-muted-foreground/40 mb-6" />
-                      <h3 className="text-xl font-semibold mb-2">No Rankings Yet</h3>
-                      <p className="text-muted-foreground max-w-md mx-auto">
-                        Be the first to build your reputation on-chain and claim the top spot on the leaderboard
+                  {isLoading ? (
+                    <div className="space-y-4">
+                      {[...Array(5)].map((_, i) => (
+                        <div key={i} className="flex items-center gap-4 p-4">
+                          <Skeleton className="w-12 h-12 rounded-full" />
+                          <Skeleton className="w-12 h-12 rounded-full" />
+                          <div className="flex-1 space-y-2">
+                            <Skeleton className="h-4 w-32" />
+                            <Skeleton className="h-3 w-24" />
+                          </div>
+                          <Skeleton className="h-8 w-12" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : leaderboardData.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Trophy className="h-16 w-16 mx-auto mb-4 text-muted-foreground/50" />
+                      <h3 className="text-lg font-semibold mb-2">No Rankings Yet</h3>
+                      <p className="text-muted-foreground">
+                        Connect your wallet and start building your reputation to appear on the leaderboard
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {leaderboardData.map((entry) => (
                         <div
                           key={entry.id}
-                          className={`flex items-center gap-4 p-4 rounded-lg border transition-all hover:shadow-md cursor-pointer group ${
-                            entry.rank <= 3 ? 'bg-primary/5 border-primary/20' : 'bg-card/50 hover:bg-card'
-                          }`}
+                          className="flex items-center gap-4 p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border"
                         >
-                          <div className="flex items-center gap-4">
-                            <div className="group-hover:scale-110 transition-transform">
-                              {getRankIcon(entry.rank)}
-                            </div>
-                            <Avatar className="w-12 h-12 bg-muted border-2 border-border">
-                              <span className="text-xl">{entry.avatar || '👤'}</span>
-                            </Avatar>
+                          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-card border-2 border-border font-bold text-lg">
+                            {getRankIcon(entry.rank)}
                           </div>
-                          
-                          <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-lg truncate">{entry.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {entry.score.toLocaleString()} reputation points
-                            </p>
-                          </div>
-                          
-                          {entry.change !== 0 && (
-                            <div className="text-right">
-                              <Badge 
-                                variant={entry.change > 0 ? 'default' : 'secondary'} 
-                                className="text-sm"
-                              >
-                                {entry.change > 0 ? '+' : ''}{entry.change}
-                              </Badge>
-                              <p className="text-xs text-muted-foreground mt-1">this week</p>
+
+                          <Avatar className="h-12 w-12 border-2 border-web3-orange">
+                            <AvatarImage src={entry.avatar} />
+                            <AvatarFallback>{entry.name.slice(0, 2).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h4 className="font-semibold">{entry.name}</h4>
+                              {entry.rank <= 3 && (
+                                <Badge variant="outline" className="bg-gradient-primary border-web3-orange">
+                                  {entry.rank === 1 ? 'Legend' : entry.rank === 2 ? 'Champion' : 'Elite'}
+                                </Badge>
+                              )}
                             </div>
-                          )}
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                              <span>Score: {entry.score.toLocaleString()}</span>
+                              {entry.change !== 0 && (
+                                <span className={entry.change > 0 ? 'text-green-500' : 'text-red-500'}>
+                                  {entry.change > 0 ? '↑' : '↓'} {Math.abs(entry.change)}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-web3-orange">#{entry.rank}</div>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -228,4 +317,6 @@ export default function Leaderboard() {
       </div>
     </SidebarProvider>
   );
-}
+};
+
+export default Leaderboard;

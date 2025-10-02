@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ethers } from 'ethers';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 // TEN Testnet configuration
 const TEN_TESTNET_CONFIG = {
@@ -269,6 +270,82 @@ export const useWeb3 = () => {
   const hasShownConnectionToast = useRef(false);
   const isInitialCheck = useRef(true);
 
+  // Check if user profile exists and create if needed
+  const ensureUserProfile = useCallback(async (walletAddress: string) => {
+    try {
+      // Check if profile exists
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('wallet_address', walletAddress.toLowerCase())
+        .maybeSingle();
+
+      if (existingProfile) {
+        console.log('Profile already exists:', existingProfile);
+        return existingProfile;
+      }
+
+      // Get current auth user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        console.log('No authenticated user, skipping profile creation');
+        return null;
+      }
+
+      // Generate username via edge function
+      const { data: usernameData, error: usernameError } = await supabase.functions.invoke('generate-username', {
+        body: { walletAddress: walletAddress.toLowerCase() }
+      });
+
+      if (usernameError) throw usernameError;
+
+      // Create profile
+      const { data: newProfile, error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          wallet_address: walletAddress.toLowerCase(),
+          username: usernameData.username,
+        })
+        .select()
+        .single();
+
+      if (profileError) throw profileError;
+
+      // Initialize leaderboard score
+      const { error: scoreError } = await supabase
+        .from('leaderboard_scores')
+        .insert({
+          wallet_address: walletAddress.toLowerCase(),
+          balance_score: 0,
+          transfers_score: 0,
+          liquidity_score: 0,
+          governance_score: 0,
+          total_score: 0,
+        });
+
+      if (scoreError) throw scoreError;
+
+      // Add default user role
+      await supabase
+        .from('user_roles')
+        .insert({
+          user_id: user.id,
+          role: 'user',
+        });
+
+      console.log('Profile created successfully:', newProfile);
+      toast.success(`Welcome, ${usernameData.username}! 🎉`);
+      
+      return newProfile;
+    } catch (error) {
+      console.error('Error ensuring user profile:', error);
+      // Don't throw - wallet connection should still work
+      return null;
+    }
+  }, []);
+
   const connectWallet = useCallback(async (showToast = true) => {
     if (!window.ethereum) {
       toast.error('MetaMask not detected. Please visit TEN Gateway first.', {
@@ -324,6 +401,9 @@ export const useWeb3 = () => {
           chainId: 443,
         });
 
+        // Ensure user profile exists
+        await ensureUserProfile(newAccount);
+
         // Only show toast on explicit user action or first connection
         if (showToast && (!hasShownConnectionToast.current || web3State.account !== newAccount)) {
           toast.success('Wallet connected successfully!');
@@ -336,7 +416,7 @@ export const useWeb3 = () => {
         toast.error('Failed to connect wallet. Please try again.');
       }
     }
-  }, [web3State.isConnected, web3State.account]);
+  }, [web3State.isConnected, web3State.account, ensureUserProfile]);
 
   const disconnectWallet = useCallback(() => {
     setWeb3State({
