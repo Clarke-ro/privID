@@ -16,7 +16,7 @@ import { useAirdrops } from '@/hooks/useAirdrops';
 const Airdrop = () => {
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('all');
-  const { airdrops, addAirdrop, updateEligibility, deleteAirdrop, counts, getFilteredAirdrops, activities } = useAirdrops();
+  const { airdrops, addAirdrop, updateEligibility, deleteAirdrop, counts, getFilteredAirdrops, activities, totalBalance, updateTotalBalance } = useAirdrops();
 
   const filteredAirdrops = getFilteredAirdrops(selectedFilter);
 
@@ -55,7 +55,11 @@ const Airdrop = () => {
                   </div>
                   
                   {/* Status Cards */}
-                  <AirdropStatusCards counts={counts} />
+                  <AirdropStatusCards 
+                    counts={counts} 
+                    totalBalance={totalBalance}
+                    onUpdateBalance={updateTotalBalance}
+                  />
                   
                   {/* Airdrops Table */}
                   <AirdropTable 

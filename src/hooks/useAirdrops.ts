@@ -12,7 +12,7 @@ export interface AirdropItem {
 
 export const useAirdrops = () => {
   const [airdrops, setAirdrops] = useState<AirdropItem[]>([]);
-
+  const [totalBalance, setTotalBalance] = useState<number>(0);
   const [activities, setActivities] = useState<any[]>([]);
 
   const addActivity = (action: string, target: string) => {
@@ -104,6 +104,11 @@ export const useAirdrops = () => {
     }
   };
 
+  const updateTotalBalance = (newBalance: number) => {
+    setTotalBalance(newBalance);
+    addActivity('Updated total balance', `$${newBalance.toLocaleString()}`);
+  };
+
   return {
     airdrops,
     addAirdrop,
@@ -111,6 +116,8 @@ export const useAirdrops = () => {
     deleteAirdrop,
     counts,
     getFilteredAirdrops,
-    activities
+    activities,
+    totalBalance,
+    updateTotalBalance
   };
 };
