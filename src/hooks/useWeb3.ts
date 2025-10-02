@@ -270,27 +270,34 @@ export const useWeb3 = () => {
   const hasShownConnectionToast = useRef(false);
   const isInitialCheck = useRef(true);
 
-  // Check if user profile exists and create if needed
-  const ensureUserProfile = useCallback(async (walletAddress: string) => {
+  // Authenticate or create user with wallet
+  const authenticateWithWallet = useCallback(async (walletAddress: string) => {
     try {
       // Check if profile exists
       const { data: existingProfile } = await supabase
         .from('profiles')
-        .select('*')
+        .select('id, wallet_address, username')
         .eq('wallet_address', walletAddress.toLowerCase())
         .maybeSingle();
 
       if (existingProfile) {
-        console.log('Profile already exists:', existingProfile);
+        // User exists, sign in anonymously and link to existing profile
+        const { data: authData, error: signInError } = await supabase.auth.signInAnonymously();
+        
+        if (signInError) throw signInError;
+        
+        console.log('Existing user authenticated:', existingProfile.username);
+        toast.success(`Welcome back, ${existingProfile.username}!`);
         return existingProfile;
       }
 
-      // Get current auth user
-      const { data: { user } } = await supabase.auth.getUser();
+      // New user - create anonymous account
+      const { data: authData, error: signUpError } = await supabase.auth.signInAnonymously();
       
-      if (!user) {
-        console.log('No authenticated user, skipping profile creation');
-        return null;
+      if (signUpError) throw signUpError;
+      
+      if (!authData.user) {
+        throw new Error('Failed to create user account');
       }
 
       // Generate username via edge function
@@ -304,7 +311,7 @@ export const useWeb3 = () => {
       const { data: newProfile, error: profileError } = await supabase
         .from('profiles')
         .insert({
-          id: user.id,
+          id: authData.user.id,
           wallet_address: walletAddress.toLowerCase(),
           username: usernameData.username,
         })
@@ -331,17 +338,17 @@ export const useWeb3 = () => {
       await supabase
         .from('user_roles')
         .insert({
-          user_id: user.id,
+          user_id: authData.user.id,
           role: 'user',
         });
 
-      console.log('Profile created successfully:', newProfile);
+      console.log('New user profile created:', newProfile);
       toast.success(`Welcome, ${usernameData.username}! 🎉`);
       
       return newProfile;
     } catch (error) {
-      console.error('Error ensuring user profile:', error);
-      // Don't throw - wallet connection should still work
+      console.error('Error authenticating with wallet:', error);
+      toast.error('Failed to authenticate with wallet');
       return null;
     }
   }, []);
@@ -393,6 +400,14 @@ export const useWeb3 = () => {
       
       // Only update state if account actually changed or wasn't connected before
       if (!web3State.isConnected || web3State.account !== newAccount) {
+        // Authenticate user with wallet before updating state
+        const profile = await authenticateWithWallet(newAccount);
+        
+        if (!profile && showToast) {
+          toast.error('Failed to authenticate. Please try again.');
+          return;
+        }
+
         setWeb3State({
           isConnected: true,
           account: newAccount,
@@ -401,12 +416,8 @@ export const useWeb3 = () => {
           chainId: 443,
         });
 
-        // Ensure user profile exists
-        await ensureUserProfile(newAccount);
-
-        // Only show toast on explicit user action or first connection
-        if (showToast && (!hasShownConnectionToast.current || web3State.account !== newAccount)) {
-          toast.success('Wallet connected successfully!');
+        // Only show connection toast on explicit user action
+        if (showToast && !hasShownConnectionToast.current) {
           hasShownConnectionToast.current = true;
         }
       }
@@ -416,9 +427,12 @@ export const useWeb3 = () => {
         toast.error('Failed to connect wallet. Please try again.');
       }
     }
-  }, [web3State.isConnected, web3State.account, ensureUserProfile]);
+  }, [web3State.isConnected, web3State.account, authenticateWithWallet]);
 
-  const disconnectWallet = useCallback(() => {
+  const disconnectWallet = useCallback(async () => {
+    // Sign out from Supabase
+    await supabase.auth.signOut();
+    
     setWeb3State({
       isConnected: false,
       account: null,
