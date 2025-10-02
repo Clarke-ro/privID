@@ -14,16 +14,117 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      leaderboard_scores: {
+        Row: {
+          balance_score: number
+          governance_score: number
+          id: string
+          last_updated: string
+          liquidity_score: number
+          rank: number | null
+          total_score: number
+          transfers_score: number
+          wallet_address: string
+        }
+        Insert: {
+          balance_score?: number
+          governance_score?: number
+          id?: string
+          last_updated?: string
+          liquidity_score?: number
+          rank?: number | null
+          total_score?: number
+          transfers_score?: number
+          wallet_address: string
+        }
+        Update: {
+          balance_score?: number
+          governance_score?: number
+          id?: string
+          last_updated?: string
+          liquidity_score?: number
+          rank?: number | null
+          total_score?: number
+          transfers_score?: number
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leaderboard_scores_wallet_address_fkey"
+            columns: ["wallet_address"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["wallet_address"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          id: string
+          updated_at: string
+          username: string
+          wallet_address: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          id: string
+          updated_at?: string
+          username: string
+          wallet_address: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          id?: string
+          updated_at?: string
+          username?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      update_leaderboard_ranks: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +251,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
