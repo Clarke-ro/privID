@@ -45,13 +45,13 @@ const Airdrop = () => {
                   {/* Header */}
                   <div className="flex items-center justify-between">
                     <h1 className="text-3xl font-bold">My Airdrop Management</h1>
-                    <Button 
-                      className="bg-gradient-primary hover:shadow-glow"
-                      onClick={() => setIsFormModalOpen(true)}
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Create New
-                    </Button>
+                  <Button 
+                    className="bg-gradient-primary hover:shadow-glow text-foreground"
+                    onClick={() => setIsFormModalOpen(true)}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create New
+                  </Button>
                   </div>
                   
                   {/* Status Cards */}
