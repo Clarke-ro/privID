@@ -50,7 +50,16 @@ export const ProfileEditForm = () => {
     setIsLoading(true);
     
     try {
-      updateProfile(formData);
+      // Only send fields that have changed
+      const changes: Partial<typeof formData> = {};
+      
+      if (formData.name !== profile.name) changes.name = formData.name;
+      if (formData.role !== profile.role) changes.role = formData.role;
+      if (formData.about !== profile.about) changes.about = formData.about;
+      if (formData.avatar !== profile.avatar) changes.avatar = formData.avatar;
+      if (formData.banner !== profile.banner) changes.banner = formData.banner;
+      
+      updateProfile(changes);
       toast({
         title: "Profile updated",
         description: "Your profile has been updated successfully.",
