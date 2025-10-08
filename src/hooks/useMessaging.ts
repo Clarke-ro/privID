@@ -83,6 +83,27 @@ export const useMessaging = () => {
   const [loading, setLoading] = useState(false);
   const [hasPublicKey, setHasPublicKey] = useState(false);
 
+  // Check if user has public key on mount and when account changes
+  useEffect(() => {
+    const checkPublicKey = async () => {
+      if (!isConnected || !provider || !account || !encryptionReady) {
+        setHasPublicKey(false);
+        return;
+      }
+
+      try {
+        const contract = new ethers.Contract(MESSAGE_CONTRACT_ADDRESS, MESSAGE_ABI, provider);
+        const existingKey = await contract.publicKeys(account);
+        setHasPublicKey(existingKey && existingKey !== '0x');
+      } catch (error) {
+        console.error('Failed to check public key:', error);
+        setHasPublicKey(false);
+      }
+    };
+
+    checkPublicKey();
+  }, [isConnected, provider, account, encryptionReady]);
+
   // Upload to IPFS using public gateway
   const uploadToIPFS = useCallback(async (data: string): Promise<string> => {
     try {
@@ -173,7 +194,7 @@ export const useMessaging = () => {
 
   // Load messages for a specific conversation
   const loadMessages = useCallback(async (otherUserAddress: string) => {
-    if (!isConnected || !provider || !account) return;
+    if (!isConnected || !provider || !account || !encryptionReady) return;
 
     try {
       setLoading(true);
@@ -187,8 +208,10 @@ export const useMessaging = () => {
       const inboxCount = await contract.getInboxCount(checksummedAccount);
       const loadedMessages: DecryptedMessage[] = [];
 
-      // Get sender's public key for decryption
-      const senderPubKey = await contract.publicKeys(checksummedOtherUser);
+      // Get other user's public key for decrypting their messages
+      const otherUserPubKey = await contract.publicKeys(checksummedOtherUser);
+      // Get own public key for decrypting messages we sent
+      const ownPubKey = await contract.publicKeys(checksummedAccount);
       
       for (let i = 0; i < Number(inboxCount); i++) {
         try {
@@ -200,21 +223,30 @@ export const useMessaging = () => {
             continue;
           }
 
-          // Fetch and decrypt message
-          const encryptedContent = await fetchFromIPFS(cid);
-          const decryptedContent = senderPubKey !== '0x' 
-            ? decryptMessage(senderPubKey, encryptedContent)
-            : null;
+          // Determine if this is an incoming or outgoing message
+          const isIncoming = from.toLowerCase() === checksummedOtherUser.toLowerCase();
+          const senderPubKey = isIncoming ? otherUserPubKey : ownPubKey;
 
-          loadedMessages.push({
-            id: `${from}-${timestamp}`,
-            from: from.toLowerCase(),
-            to: to.toLowerCase(),
-            content: decryptedContent || '[Encrypted message - key not available]',
-            timestamp: new Date(Number(timestamp) * 1000),
-            cid,
-            encrypted: true
-          });
+          // For outgoing messages, we stored them locally so we can display them
+          // For incoming messages, we need to decrypt using sender's public key
+          if (isIncoming) {
+            // Fetch and decrypt incoming message
+            const encryptedContent = await fetchFromIPFS(cid);
+            const decryptedContent = senderPubKey !== '0x' 
+              ? decryptMessage(senderPubKey, encryptedContent)
+              : null;
+
+            loadedMessages.push({
+              id: `${from}-${timestamp}`,
+              from: from.toLowerCase(),
+              to: to.toLowerCase(),
+              content: decryptedContent || '[Encrypted message - key not available]',
+              timestamp: new Date(Number(timestamp) * 1000),
+              cid,
+              encrypted: true
+            });
+          }
+          // Skip outgoing messages as they're already in local state from sendEncryptedMessage
         } catch (error) {
           console.error('Failed to load message:', error);
         }
@@ -227,7 +259,7 @@ export const useMessaging = () => {
     } finally {
       setLoading(false);
     }
-  }, [isConnected, provider, account, decryptMessage, fetchFromIPFS]);
+  }, [isConnected, provider, account, encryptionReady, decryptMessage, fetchFromIPFS]);
 
   // Send encrypted message
   const sendEncryptedMessage = useCallback(async (recipientAddress: string, message: string) => {
