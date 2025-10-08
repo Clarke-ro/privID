@@ -14,7 +14,7 @@ export const IDCard = () => {
   const { account } = useWeb3();
   const { profile } = useUserProfile();
   const { reputation } = useReputation();
-  const { getAttestationHash } = useAttestations();
+  const { getAttestationHash, loading } = useAttestations();
   const [qrCodeUrl, setQrCodeUrl] = useState('');
   
   // Mock account for demo purposes when no wallet is connected
@@ -25,11 +25,11 @@ export const IDCard = () => {
   // Determine reputation tier
   const reputationType = displayScore >= 1000000 ? 'GOLDEN' : 'SILVER';
 
-  // Get verification hash if available
+  // Get verification hash if available (loads from blockchain)
   const verificationHash = getAttestationHash('national-id');
   
   // Generate QR code with verification hash if available, otherwise use account
-  const qrData = verificationHash || demoAccount;
+  const qrData = verificationHash ? `0x${verificationHash}` : demoAccount;
   
   useEffect(() => {
     QRCode.toDataURL(qrData, { 

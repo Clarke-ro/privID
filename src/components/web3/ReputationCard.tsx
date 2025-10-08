@@ -23,7 +23,7 @@ export const ReputationCard = () => {
   // Generate QR code - use verification hash if available, otherwise wallet address
   useEffect(() => {
     const verificationHash = getAttestationHash('national-id');
-    const qrData = verificationHash || account || '0x1234567890123456789012345678901234567890';
+    const qrData = verificationHash ? `0x${verificationHash}` : (account || '0x1234567890123456789012345678901234567890');
     
     QRCode.toDataURL(qrData, { 
       width: 120,

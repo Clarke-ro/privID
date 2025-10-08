@@ -138,14 +138,13 @@ export const NationalIDModal = ({ open, onOpenChange }: NationalIDModalProps) =>
   };
 
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (generatedHash) {
       setIsProcessing(true);
       
-      // Simulate final processing
-      setTimeout(() => {
-        addAttestation('national-id', generatedHash);
-        toast.success('National ID verification completed!');
+      try {
+        await addAttestation('national-id', generatedHash);
+        toast.success('National ID verification completed and stored on blockchain!');
         stopCamera();
         onOpenChange(false);
         
@@ -159,7 +158,10 @@ export const NationalIDModal = ({ open, onOpenChange }: NationalIDModalProps) =>
           setCameraError(null);
           setIsProcessing(false);
         }, 300);
-      }, 1000);
+      } catch (error) {
+        console.error('Verification failed:', error);
+        setIsProcessing(false);
+      }
     }
   };
 
