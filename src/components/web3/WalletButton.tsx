@@ -28,7 +28,7 @@ export const WalletButton = () => {
   }
 
   return (
-    <Button onClick={handleConnect} className="bg-gradient-primary hover:shadow-glow transition-all duration-300">
+    <Button onClick={handleConnect} className="bg-gradient-button text-white font-semibold hover:shadow-glow hover:scale-105 transition-all duration-300">
       <Wallet className="w-4 h-4 mr-2" />
       Connect Wallet
     </Button>

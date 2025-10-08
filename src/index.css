@@ -59,6 +59,7 @@ All colors MUST be HSL.
     
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(210 100% 97%) 0%, hsl(280 100% 98%) 50%, hsl(15 100% 96%) 100%);
+    --gradient-button: linear-gradient(135deg, hsl(217 91% 50%), hsl(262 83% 52%));
     --gradient-card: linear-gradient(145deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
     --gradient-glow: radial-gradient(circle at center, hsl(217 91% 60% / 0.15), transparent 70%);
     --gradient-web3: linear-gradient(135deg, hsl(217 91% 60%), hsl(262 83% 58%));
@@ -144,6 +145,7 @@ All colors MUST be HSL.
     
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(220 30% 6%) 0%, hsl(262 50% 8%) 50%, hsl(217 40% 7%) 100%);
+    --gradient-button: linear-gradient(135deg, hsl(217 91% 55%), hsl(262 83% 58%));
     --gradient-card: linear-gradient(145deg, rgba(30, 35, 50, 0.8), rgba(25, 28, 45, 0.6));
     --gradient-glow: radial-gradient(circle at center, hsl(217 91% 60% / 0.2), transparent 70%);
     --gradient-web3: linear-gradient(135deg, hsl(217 91% 60%), hsl(262 83% 58%));
