@@ -177,21 +177,26 @@ export const useMessaging = () => {
 
     try {
       setLoading(true);
+      
+      // Validate and checksum addresses to prevent ENS resolution
+      const checksummedOtherUser = ethers.getAddress(otherUserAddress);
+      const checksummedAccount = ethers.getAddress(account);
+      
       const contract = new ethers.Contract(MESSAGE_CONTRACT_ADDRESS, MESSAGE_ABI, provider);
       
-      const inboxCount = await contract.getInboxCount(account);
+      const inboxCount = await contract.getInboxCount(checksummedAccount);
       const loadedMessages: DecryptedMessage[] = [];
 
       // Get sender's public key for decryption
-      const senderPubKey = await contract.publicKeys(otherUserAddress);
+      const senderPubKey = await contract.publicKeys(checksummedOtherUser);
       
       for (let i = 0; i < Number(inboxCount); i++) {
         try {
-          const [from, to, cid, timestamp] = await contract.getMessage(account, i);
+          const [from, to, cid, timestamp] = await contract.getMessage(checksummedAccount, i);
           
           // Filter messages from/to the specific user
-          if (from.toLowerCase() !== otherUserAddress.toLowerCase() && 
-              to.toLowerCase() !== otherUserAddress.toLowerCase()) {
+          if (from.toLowerCase() !== checksummedOtherUser.toLowerCase() && 
+              to.toLowerCase() !== checksummedOtherUser.toLowerCase()) {
             continue;
           }
 
@@ -239,10 +244,20 @@ export const useMessaging = () => {
 
     try {
       setLoading(true);
+      
+      // Validate and checksum the recipient address to prevent ENS resolution
+      let checksummedRecipient: string;
+      try {
+        checksummedRecipient = ethers.getAddress(recipientAddress);
+      } catch (error) {
+        toast.error('Invalid recipient address');
+        throw new Error('Invalid address format');
+      }
+      
       const contract = new ethers.Contract(MESSAGE_CONTRACT_ADDRESS, MESSAGE_ABI, provider);
       
       // Get recipient's public key
-      const recipientPubKey = await contract.publicKeys(recipientAddress);
+      const recipientPubKey = await contract.publicKeys(checksummedRecipient);
       if (!recipientPubKey || recipientPubKey === '0x') {
         toast.error('Recipient has not set up encryption key');
         throw new Error('Recipient key not found');
@@ -259,7 +274,7 @@ export const useMessaging = () => {
       // Send via smart contract
       toast.info('Sending encrypted message...');
       const contractWithSigner = new ethers.Contract(MESSAGE_CONTRACT_ADDRESS, MESSAGE_ABI, signer);
-      const tx = await contractWithSigner.sendMessage(recipientAddress, cid);
+      const tx = await contractWithSigner.sendMessage(checksummedRecipient, cid);
       await tx.wait();
 
       toast.success('Message sent!');
@@ -268,7 +283,7 @@ export const useMessaging = () => {
       const newMessage: DecryptedMessage = {
         id: `${account}-${Date.now()}`,
         from: account.toLowerCase(),
-        to: recipientAddress.toLowerCase(),
+        to: checksummedRecipient.toLowerCase(),
         content: message,
         timestamp: new Date(),
         cid,
