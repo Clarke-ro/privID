@@ -3,38 +3,34 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Send, Shield } from 'lucide-react';
+import { ArrowLeft, Send, Shield, Lock } from 'lucide-react';
 import { formatDistance } from 'date-fns';
-
-interface Message {
-  id: string;
-  content: string;
-  timestamp: Date;
-  sender: 'user' | 'other';
-  encrypted: boolean;
-}
+import { useMessaging } from '@/hooks/useMessaging';
+import { useWeb3 } from '@/hooks/useWeb3';
 
 interface MessageThreadProps {
   recipient: {
     name: string;
     avatar?: string;
     role: string;
+    address?: string;
   };
   onBack: () => void;
 }
 
 export const MessageThread = ({ recipient, onBack }: MessageThreadProps) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      content: 'Hey! I saw your post about the AMM contract. Would love to discuss the gas optimization techniques you used...',
-      timestamp: new Date(Date.now() - 30 * 60 * 1000),
-      sender: 'other',
-      encrypted: true
-    }
-  ]);
+  const { account } = useWeb3();
+  const { messages: blockchainMessages, loading, hasPublicKey, sendEncryptedMessage, loadMessages } = useMessaging();
   const [inputValue, setInputValue] = useState('');
+  const [sending, setSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Load messages when component mounts or recipient changes
+  useEffect(() => {
+    if (recipient.address) {
+      loadMessages(recipient.address);
+    }
+  }, [recipient.address, loadMessages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,21 +38,20 @@ export const MessageThread = ({ recipient, onBack }: MessageThreadProps) => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [blockchainMessages]);
 
-  const handleSend = () => {
-    if (!inputValue.trim()) return;
+  const handleSend = async () => {
+    if (!inputValue.trim() || !recipient.address || sending) return;
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      content: inputValue,
-      timestamp: new Date(),
-      sender: 'user',
-      encrypted: true
-    };
-
-    setMessages([...messages, newMessage]);
-    setInputValue('');
+    try {
+      setSending(true);
+      await sendEncryptedMessage(recipient.address, inputValue);
+      setInputValue('');
+    } catch (error) {
+      console.error('Failed to send message:', error);
+    } finally {
+      setSending(false);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -89,48 +84,78 @@ export const MessageThread = ({ recipient, onBack }: MessageThreadProps) => {
           <p className="text-sm text-muted-foreground truncate">{recipient.role}</p>
         </div>
 
-        <div className="flex items-center gap-2 text-xs text-muted-foreground bg-primary/10 px-3 py-1 rounded-full">
-          <Shield className="h-3 w-3 text-primary" />
-          <span>End-to-End Encrypted</span>
-        </div>
+        {hasPublicKey && (
+          <div className="flex items-center gap-2 text-xs text-muted-foreground bg-primary/10 px-3 py-1 rounded-full">
+            <Shield className="h-3 w-3 text-primary" />
+            <span>Encryption Active</span>
+          </div>
+        )}
+        {!hasPublicKey && (
+          <div className="flex items-center gap-2 text-xs text-amber-600 bg-amber-100 dark:bg-amber-900/20 px-3 py-1 rounded-full">
+            <Lock className="h-3 w-3" />
+            <span>Key Setup Required</span>
+          </div>
+        )}
       </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
-            <div className={`flex gap-2 max-w-[70%] ${message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-              {message.sender === 'other' && (
-                <Avatar className="h-8 w-8 shrink-0">
-                  <AvatarImage src={recipient.avatar} alt={recipient.name} />
-                  <AvatarFallback>{recipient.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-              )}
-              
-              <div>
-                <Card className={`${
-                  message.sender === 'user' 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-card'
-                }`}>
-                  <CardContent className="p-3">
-                    <p className="text-sm">{message.content}</p>
-                  </CardContent>
-                </Card>
+        {loading && blockchainMessages.length === 0 && (
+          <div className="flex items-center justify-center h-full text-muted-foreground">
+            <div className="text-center">
+              <Shield className="h-12 w-12 mx-auto mb-2 animate-pulse" />
+              <p>Loading encrypted messages...</p>
+            </div>
+          </div>
+        )}
+        
+        {!loading && blockchainMessages.length === 0 && (
+          <div className="flex items-center justify-center h-full text-muted-foreground">
+            <div className="text-center">
+              <Shield className="h-12 w-12 mx-auto mb-2 opacity-50" />
+              <p>No messages yet. Start a secure conversation!</p>
+            </div>
+          </div>
+        )}
+
+        {blockchainMessages.map((message) => {
+          const isUser = message.from.toLowerCase() === account?.toLowerCase();
+          
+          return (
+            <div
+              key={message.id}
+              className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}
+            >
+              <div className={`flex gap-2 max-w-[70%] ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
+                {!isUser && (
+                  <Avatar className="h-8 w-8 shrink-0">
+                    <AvatarImage src={recipient.avatar} alt={recipient.name} />
+                    <AvatarFallback>{recipient.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                )}
                 
-                <div className={`flex items-center gap-1 mt-1 text-xs text-muted-foreground ${
-                  message.sender === 'user' ? 'justify-end' : 'justify-start'
-                }`}>
-                  {message.encrypted && <Shield className="h-3 w-3" />}
-                  <span>{formatDistance(message.timestamp, new Date(), { addSuffix: true })}</span>
+                <div>
+                  <Card className={`${
+                    isUser 
+                      ? 'bg-primary text-primary-foreground' 
+                      : 'bg-card'
+                  }`}>
+                    <CardContent className="p-3">
+                      <p className="text-sm">{message.content}</p>
+                    </CardContent>
+                  </Card>
+                  
+                  <div className={`flex items-center gap-1 mt-1 text-xs text-muted-foreground ${
+                    isUser ? 'justify-end' : 'justify-start'
+                  }`}>
+                    {message.encrypted && <Shield className="h-3 w-3" />}
+                    <span>{formatDistance(message.timestamp, new Date(), { addSuffix: true })}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
 
@@ -141,16 +166,23 @@ export const MessageThread = ({ recipient, onBack }: MessageThreadProps) => {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Type an encrypted message..."
+            placeholder={hasPublicKey ? "Type an encrypted message..." : "Set up encryption key first..."}
             className="flex-1"
+            disabled={!hasPublicKey || sending}
           />
-          <Button onClick={handleSend} size="icon">
+          <Button 
+            onClick={handleSend} 
+            size="icon" 
+            disabled={!hasPublicKey || sending || !inputValue.trim()}
+          >
             <Send className="h-4 w-4" />
           </Button>
         </div>
         <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
           <Shield className="h-3 w-3" />
-          Messages are end-to-end encrypted. Smart contract integration pending.
+          {hasPublicKey 
+            ? 'Messages are end-to-end encrypted and stored on TEN network.'
+            : 'Connect wallet to enable encrypted messaging.'}
         </p>
       </div>
     </div>

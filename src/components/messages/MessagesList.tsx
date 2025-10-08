@@ -9,6 +9,7 @@ export interface Message {
     name: string;
     avatar?: string;
     role: string;
+    address?: string;
   };
   preview: string;
   timestamp: Date;
@@ -26,7 +27,8 @@ const mockMessages: Message[] = [
     sender: {
       name: 'Sarah Chen',
       role: 'Smart Contract Developer',
-      avatar: ''
+      avatar: '',
+      address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb'
     },
     preview: 'Hey! I saw your post about the AMM contract. Would love to discuss the gas optimization techniques you used...',
     timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
