@@ -20,9 +20,10 @@ interface MessageThreadProps {
 
 export const MessageThread = ({ recipient, onBack }: MessageThreadProps) => {
   const { account } = useWeb3();
-  const { messages: blockchainMessages, loading, hasPublicKey, sendEncryptedMessage, loadMessages } = useMessaging();
+  const { messages: blockchainMessages, loading, hasPublicKey, sendEncryptedMessage, loadMessages, ensurePublicKey } = useMessaging();
   const [inputValue, setInputValue] = useState('');
   const [sending, setSending] = useState(false);
+  const [settingUpKey, setSettingUpKey] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load messages when component mounts or recipient changes
@@ -58,6 +59,17 @@ export const MessageThread = ({ recipient, onBack }: MessageThreadProps) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+    }
+  };
+
+  const handleSetupKey = async () => {
+    try {
+      setSettingUpKey(true);
+      await ensurePublicKey();
+    } catch (error) {
+      console.error('Failed to setup encryption key:', error);
+    } finally {
+      setSettingUpKey(false);
     }
   };
 
@@ -100,7 +112,49 @@ export const MessageThread = ({ recipient, onBack }: MessageThreadProps) => {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {loading && blockchainMessages.length === 0 && (
+        {!hasPublicKey && !loading && (
+          <div className="flex items-center justify-center h-full">
+            <Card className="max-w-md border-amber-500/50 bg-amber-50 dark:bg-amber-900/10">
+              <CardContent className="p-6 text-center space-y-4">
+                <div className="flex justify-center">
+                  <div className="h-16 w-16 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                    <Lock className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="font-semibold text-lg text-amber-900 dark:text-amber-100">
+                    Encryption Key Required
+                  </h3>
+                  <p className="text-sm text-amber-800 dark:text-amber-200">
+                    To send and receive encrypted messages, you need to set up your encryption key first. This only needs to be done once.
+                  </p>
+                </div>
+                <Button 
+                  onClick={handleSetupKey}
+                  disabled={settingUpKey}
+                  className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                >
+                  {settingUpKey ? (
+                    <>
+                      <Shield className="h-4 w-4 mr-2 animate-pulse" />
+                      Setting Up Key...
+                    </>
+                  ) : (
+                    <>
+                      <Shield className="h-4 w-4 mr-2" />
+                      Setup Encryption Key
+                    </>
+                  )}
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  Your keys are generated locally and stored securely in your browser.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {hasPublicKey && loading && blockchainMessages.length === 0 && (
           <div className="flex items-center justify-center h-full text-muted-foreground">
             <div className="text-center">
               <Shield className="h-12 w-12 mx-auto mb-2 animate-pulse" />
@@ -109,7 +163,7 @@ export const MessageThread = ({ recipient, onBack }: MessageThreadProps) => {
           </div>
         )}
         
-        {!loading && blockchainMessages.length === 0 && (
+        {hasPublicKey && !loading && blockchainMessages.length === 0 && (
           <div className="flex items-center justify-center h-full text-muted-foreground">
             <div className="text-center">
               <Shield className="h-12 w-12 mx-auto mb-2 opacity-50" />
