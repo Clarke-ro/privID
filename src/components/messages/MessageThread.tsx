@@ -3,10 +3,18 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { ArrowLeft, Send, Shield, Lock } from 'lucide-react';
+import { ArrowLeft, Send, Shield, Lock, Settings } from 'lucide-react';
 import { formatDistance } from 'date-fns';
 import { useMessaging } from '@/hooks/useMessaging';
 import { useWeb3 } from '@/hooks/useWeb3';
+import { EncryptionKeyManager } from './EncryptionKeyManager';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface MessageThreadProps {
   recipient: {
@@ -108,6 +116,20 @@ export const MessageThread = ({ recipient, onBack }: MessageThreadProps) => {
             <span>Key Setup Required</span>
           </div>
         )}
+
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="icon" className="shrink-0">
+              <Settings className="h-4 w-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Encryption Settings</DialogTitle>
+            </DialogHeader>
+            <EncryptionKeyManager />
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Messages */}

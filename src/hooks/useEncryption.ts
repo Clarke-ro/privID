@@ -3,7 +3,7 @@ import nacl from 'tweetnacl';
 import { encodeBase64, decodeBase64 } from 'tweetnacl-util';
 import { toast } from 'sonner';
 
-const STORAGE_KEY = 'e2e_encryption_keypair';
+const STORAGE_KEY = 'e2e-keypair';
 
 export const useEncryption = () => {
   const [keyPair, setKeyPair] = useState<nacl.BoxKeyPair | null>(null);
@@ -97,6 +97,62 @@ export const useEncryption = () => {
     setKeyPair(null);
   }, []);
 
+  const exportKeys = useCallback((): string | null => {
+    if (!keyPair) {
+      toast.error('No encryption keys to export');
+      return null;
+    }
+    
+    const exportData = {
+      publicKey: encodeBase64(keyPair.publicKey),
+      secretKey: encodeBase64(keyPair.secretKey)
+    };
+    
+    return JSON.stringify(exportData);
+  }, [keyPair]);
+
+  const importKeys = useCallback((keysJson: string): boolean => {
+    try {
+      const parsed = JSON.parse(keysJson);
+      
+      if (!parsed.publicKey || !parsed.secretKey) {
+        toast.error('Invalid key format');
+        return false;
+      }
+      
+      const importedKeyPair = {
+        publicKey: decodeBase64(parsed.publicKey),
+        secretKey: decodeBase64(parsed.secretKey)
+      };
+      
+      setKeyPair(importedKeyPair);
+      localStorage.setItem(STORAGE_KEY, keysJson);
+      toast.success('Encryption keys imported successfully!');
+      return true;
+    } catch (error) {
+      console.error('Failed to import keys:', error);
+      toast.error('Failed to import keys. Invalid format.');
+      return false;
+    }
+  }, []);
+
+  const downloadKeysBackup = useCallback(() => {
+    const keysData = exportKeys();
+    if (!keysData) return;
+    
+    const blob = new Blob([keysData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `encryption-keys-backup-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast.success('Encryption keys backed up! Keep this file safe.');
+  }, [exportKeys]);
+
   return {
     keyPair,
     isReady,
@@ -104,6 +160,9 @@ export const useEncryption = () => {
     encryptMessage,
     decryptMessage,
     generateNewKeyPair,
-    clearKeys
+    clearKeys,
+    exportKeys,
+    importKeys,
+    downloadKeysBackup
   };
 };
