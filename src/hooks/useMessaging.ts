@@ -86,7 +86,13 @@ export const useMessaging = () => {
   // Check if user has public key on mount and when account changes
   useEffect(() => {
     const checkPublicKey = async () => {
-      if (!isConnected || !provider || !account || !encryptionReady) {
+      if (!isConnected || !provider || !account) {
+        setHasPublicKey(false);
+        return;
+      }
+
+      // CRITICAL: Must have BOTH local keypair AND on-chain public key
+      if (!encryptionReady) {
         setHasPublicKey(false);
         return;
       }
@@ -94,7 +100,10 @@ export const useMessaging = () => {
       try {
         const contract = new ethers.Contract(MESSAGE_CONTRACT_ADDRESS, MESSAGE_ABI, provider);
         const existingKey = await contract.publicKeys(account);
-        setHasPublicKey(existingKey && existingKey !== '0x');
+        const hasOnChainKey = existingKey && existingKey !== '0x';
+        
+        // Only set hasPublicKey to true if both local keypair exists AND on-chain key is registered
+        setHasPublicKey(hasOnChainKey);
       } catch (error) {
         console.error('Failed to check public key:', error);
         setHasPublicKey(false);
@@ -194,7 +203,13 @@ export const useMessaging = () => {
 
   // Load messages for a specific conversation
   const loadMessages = useCallback(async (otherUserAddress: string) => {
-    if (!isConnected || !provider || !account || !encryptionReady) return;
+    if (!isConnected || !provider || !account) return;
+
+    // CRITICAL: User MUST have local keypair ready to decrypt messages
+    if (!encryptionReady) {
+      toast.error('Please set up your encryption keys first');
+      return;
+    }
 
     try {
       setLoading(true);
@@ -205,13 +220,18 @@ export const useMessaging = () => {
       
       const contract = new ethers.Contract(MESSAGE_CONTRACT_ADDRESS, MESSAGE_ABI, provider);
       
+      // Verify current user has on-chain public key registered
+      const ownPubKey = await contract.publicKeys(checksummedAccount);
+      if (!ownPubKey || ownPubKey === '0x') {
+        toast.error('Please register your encryption key on-chain first');
+        return;
+      }
+      
       const inboxCount = await contract.getInboxCount(checksummedAccount);
       const loadedMessages: DecryptedMessage[] = [];
 
       // Get other user's public key for decrypting their messages
       const otherUserPubKey = await contract.publicKeys(checksummedOtherUser);
-      // Get own public key for decrypting messages we sent
-      const ownPubKey = await contract.publicKeys(checksummedAccount);
       
       for (let i = 0; i < Number(inboxCount); i++) {
         try {
@@ -225,28 +245,51 @@ export const useMessaging = () => {
 
           // Determine if this is an incoming or outgoing message
           const isIncoming = from.toLowerCase() === checksummedOtherUser.toLowerCase();
-          const senderPubKey = isIncoming ? otherUserPubKey : ownPubKey;
-
-          // For outgoing messages, we stored them locally so we can display them
-          // For incoming messages, we need to decrypt using sender's public key
+          
+          // Fetch encrypted content from IPFS
+          const encryptedContent = await fetchFromIPFS(cid);
+          
+          // Decrypt using sender's public key
+          // CRITICAL: decryptMessage uses OUR private key (local) + sender's public key
+          let decryptedContent: string | null = null;
+          
           if (isIncoming) {
-            // Fetch and decrypt incoming message
-            const encryptedContent = await fetchFromIPFS(cid);
-            const decryptedContent = senderPubKey !== '0x' 
-              ? decryptMessage(senderPubKey, encryptedContent)
-              : null;
-
-            loadedMessages.push({
-              id: `${from}-${timestamp}`,
-              from: from.toLowerCase(),
-              to: to.toLowerCase(),
-              content: decryptedContent || '[Encrypted message - key not available]',
-              timestamp: new Date(Number(timestamp) * 1000),
-              cid,
-              encrypted: true
-            });
+            // For incoming messages: decrypt using sender's public key + our private key
+            if (!otherUserPubKey || otherUserPubKey === '0x') {
+              decryptedContent = '[Sender has not set up encryption]';
+            } else {
+              try {
+                decryptedContent = decryptMessage(otherUserPubKey, encryptedContent);
+                if (!decryptedContent) {
+                  decryptedContent = '[Failed to decrypt - key mismatch]';
+                }
+              } catch (err) {
+                console.error('Decryption error:', err);
+                decryptedContent = '[Decryption failed]';
+              }
+            }
+          } else {
+            // For outgoing messages: we can decrypt using our own public key + our private key
+            try {
+              decryptedContent = decryptMessage(ownPubKey, encryptedContent);
+              if (!decryptedContent) {
+                decryptedContent = '[Failed to decrypt - key mismatch]';
+              }
+            } catch (err) {
+              console.error('Decryption error:', err);
+              decryptedContent = '[Decryption failed]';
+            }
           }
-          // Skip outgoing messages as they're already in local state from sendEncryptedMessage
+
+          loadedMessages.push({
+            id: `${from}-${to}-${timestamp}`,
+            from: from.toLowerCase(),
+            to: to.toLowerCase(),
+            content: decryptedContent || '[Decryption failed]',
+            timestamp: new Date(Number(timestamp) * 1000),
+            cid,
+            encrypted: true
+          });
         } catch (error) {
           console.error('Failed to load message:', error);
         }
@@ -268,7 +311,13 @@ export const useMessaging = () => {
       throw new Error('Wallet not connected');
     }
 
-    // Ensure public key is set
+    // CRITICAL: Check if user has local keypair
+    if (!encryptionReady) {
+      toast.error('Please set up your encryption keys first');
+      throw new Error('Encryption keys not ready');
+    }
+
+    // Ensure public key is registered on-chain
     const keyReady = await ensurePublicKey();
     if (!keyReady) {
       throw new Error('Failed to register encryption key');
@@ -288,11 +337,11 @@ export const useMessaging = () => {
       
       const contract = new ethers.Contract(MESSAGE_CONTRACT_ADDRESS, MESSAGE_ABI, provider);
       
-      // Get recipient's public key
+      // CRITICAL: Check if recipient has registered their public key on-chain
       const recipientPubKey = await contract.publicKeys(checksummedRecipient);
       if (!recipientPubKey || recipientPubKey === '0x') {
-        toast.error('Recipient has not set up encryption key');
-        throw new Error('Recipient key not found');
+        toast.error('Recipient must set up encryption before receiving messages');
+        throw new Error('Recipient has not registered encryption key on-chain');
       }
 
       // Encrypt message
