@@ -5,10 +5,7 @@ import { formatDistance } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { useEffect, useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { MessageCircle, Shield } from 'lucide-react';
-import { useWeb3 } from '@/hooks/useWeb3';
-import { ethers } from 'ethers';
-import { NewMessageSheet } from './NewMessageSheet';
+import { Users } from 'lucide-react';
 
 export interface Message {
   id: string;
@@ -28,100 +25,46 @@ interface MessagesListProps {
   onMessageClick: (message: Message) => void;
 }
 
-const MESSAGE_CONTRACT_ADDRESS = '0xa2D9551c913747d101EBB6789F8baFC113758894';
-
-const MESSAGE_ABI = [
-  {
-    inputs: [{ internalType: 'address', name: 'user', type: 'address' }],
-    name: 'getInboxCount',
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    inputs: [
-      { internalType: 'address', name: 'user', type: 'address' },
-      { internalType: 'uint256', name: 'index', type: 'uint256' }
-    ],
-    name: 'getMessage',
-    outputs: [
-      { internalType: 'address', name: '', type: 'address' },
-      { internalType: 'address', name: '', type: 'address' },
-      { internalType: 'string', name: '', type: 'string' },
-      { internalType: 'uint256', name: '', type: 'uint256' }
-    ],
-    stateMutability: 'view',
-    type: 'function'
-  }
-];
-
 export const MessagesList = ({ onMessageClick }: MessagesListProps) => {
-  const { account, provider, isConnected } = useWeb3();
-  const [conversations, setConversations] = useState<Message[]>([]);
+  const [users, setUsers] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchConversations = async () => {
-      if (!isConnected || !provider || !account) {
-        setLoading(false);
-        return;
-      }
-
+    const fetchUsers = async () => {
       try {
         setLoading(true);
-        const contract = new ethers.Contract(MESSAGE_CONTRACT_ADDRESS, MESSAGE_ABI, provider);
-        const inboxCount = await contract.getInboxCount(account);
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id, wallet_address, username, avatar_url, bio')
+          .not('wallet_address', 'is', null)
+          .order('created_at', { ascending: false });
 
-        // Get unique conversation partners
-        const conversationPartners = new Set<string>();
-        
-        for (let i = 0; i < Number(inboxCount); i++) {
-          try {
-            const [from, to] = await contract.getMessage(account, i);
-            // Add the other person in the conversation
-            const otherAddress = from.toLowerCase() === account.toLowerCase() ? to : from;
-            conversationPartners.add(otherAddress.toLowerCase());
-          } catch (error) {
-            console.error('Failed to load message:', error);
-          }
-        }
+        if (error) throw error;
 
-        // Fetch profiles for conversation partners
-        if (conversationPartners.size > 0) {
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('id, wallet_address, username, avatar_url, bio')
-            .in('wallet_address', Array.from(conversationPartners));
+        const formattedUsers: Message[] = (data || []).map(user => ({
+          id: user.id,
+          sender: {
+            name: user.username || `User ${user.wallet_address?.slice(0, 6)}`,
+            avatar: user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.wallet_address}`,
+            role: user.bio || 'Web3 User',
+            address: user.wallet_address || undefined
+          },
+          preview: 'Click to start a secure conversation',
+          timestamp: new Date(),
+          unread: false,
+          type: 'direct'
+        }));
 
-          if (error) throw error;
-
-          const formattedConversations: Message[] = (data || []).map(user => ({
-            id: user.id,
-            sender: {
-              name: user.username || `User ${user.wallet_address?.slice(0, 6)}`,
-              avatar: user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.wallet_address}`,
-              role: user.bio || 'Web3 User',
-              address: user.wallet_address || undefined
-            },
-            preview: 'Encrypted conversation',
-            timestamp: new Date(),
-            unread: false,
-            type: 'direct'
-          }));
-
-          setConversations(formattedConversations);
-        } else {
-          setConversations([]);
-        }
+        setUsers(formattedUsers);
       } catch (error) {
-        console.error('Failed to fetch conversations:', error);
+        console.error('Failed to fetch users:', error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchConversations();
-  }, [isConnected, provider, account]);
+    fetchUsers();
+  }, []);
 
   if (loading) {
     return (
@@ -144,34 +87,19 @@ export const MessagesList = ({ onMessageClick }: MessagesListProps) => {
     );
   }
 
-  if (conversations.length === 0) {
+  if (users.length === 0) {
     return (
       <Card className="border-dashed">
-        <CardContent className="p-8 text-center space-y-4">
+        <CardContent className="p-8 text-center">
           <div className="flex justify-center mb-4">
-            <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <MessageCircle className="h-8 w-8 text-primary" />
+            <div className="h-16 w-16 rounded-full bg-muted flex items-center justify-center">
+              <Users className="h-8 w-8 text-muted-foreground" />
             </div>
           </div>
-          <div>
-            <h3 className="font-semibold mb-2 flex items-center justify-center gap-2">
-              <Shield className="h-4 w-4 text-primary" />
-              No Conversations Yet
-            </h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Start an end-to-end encrypted conversation with other users in the network.
-            </p>
-          </div>
-          <NewMessageSheet onUserSelect={(user) => {
-            onMessageClick({
-              id: user.address,
-              sender: user,
-              preview: 'New conversation',
-              timestamp: new Date(),
-              unread: false,
-              type: 'direct'
-            });
-          }} />
+          <h3 className="font-semibold mb-2">No Users Found</h3>
+          <p className="text-sm text-muted-foreground">
+            Users who connect their wallets will appear here.
+          </p>
         </CardContent>
       </Card>
     );
@@ -179,18 +107,7 @@ export const MessagesList = ({ onMessageClick }: MessagesListProps) => {
 
   return (
     <div className="space-y-4">
-      <NewMessageSheet onUserSelect={(user) => {
-        onMessageClick({
-          id: user.address,
-          sender: user,
-          preview: 'New conversation',
-          timestamp: new Date(),
-          unread: false,
-          type: 'direct'
-        });
-      }} />
-      
-      {conversations.map((message) => (
+      {users.map((message) => (
         <Card 
           key={message.id} 
           onClick={() => onMessageClick(message)}
