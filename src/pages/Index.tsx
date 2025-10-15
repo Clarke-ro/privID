@@ -44,6 +44,12 @@ const Index = () => {
   return <div className="min-h-screen bg-background">
         <FirstTimeUserModal />
         
+        {/* Floating gradient orbs */}
+        <div className="orb orb-1" />
+        <div className="orb orb-2" />
+        <div className="orb orb-3" />
+        <div className="orb orb-4" />
+        
         {/* Hero Background */}
         <div className="fixed top-0 left-0 w-full h-screen bg-cover bg-center z-0" style={{
         backgroundImage: `url(${backgroundImage})`,
@@ -104,8 +110,15 @@ const Index = () => {
       </div>;
   }
   return <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+      <div className="min-h-screen flex w-full relative">
         <FirstTimeUserModal />
+        
+        {/* Floating gradient orbs */}
+        <div className="orb orb-1" />
+        <div className="orb orb-2" />
+        <div className="orb orb-3" />
+        <div className="orb orb-4" />
+        
         <AppSidebar />
         
         <div className="flex-1 flex flex-col">
