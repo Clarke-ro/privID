@@ -12,7 +12,7 @@ export const Header = () => {
           <SidebarTrigger />
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-bold bg-gradient-primary bg-clip-text text-transparent">
-              Encrypted Reputation
+              PrivID
             </h1>
             <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
               TEN

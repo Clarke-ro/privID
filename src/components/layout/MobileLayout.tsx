@@ -12,7 +12,7 @@ interface MobileLayoutProps {
 
 export const MobileLayout: React.FC<MobileLayoutProps> = ({ 
   children, 
-  title = "Encrypted Reputation",
+  title = "PrivID",
   subtitle = "Your Web3 Identity & Reputation Hub",
   showHero = true 
 }) => {

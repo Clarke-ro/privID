@@ -14,11 +14,14 @@ export const WelcomeSection = () => {
       <div className="w-full max-w-6xl mx-auto px-4 relative z-10">
         <div className="text-center mb-16 animate-fade-in">
           <div className="relative inline-block mb-8">
-            <div className="absolute inset-0 bg-gradient-primary blur-3xl opacity-20" />
-            <Shield className="w-16 h-16 text-primary mx-auto relative" />
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-300 to-slate-500 blur-3xl opacity-30" />
+            <Shield className="w-16 h-16 mx-auto relative" style={{
+              filter: 'drop-shadow(0 4px 8px rgba(148, 163, 184, 0.4)) drop-shadow(0 0 20px rgba(203, 213, 225, 0.3))',
+              color: '#cbd5e1'
+            }} />
           </div>
           <h1 className="text-6xl md:text-7xl font-bold mb-6 tracking-tight">
-            Encrypted Reputation,
+            PrivID,
             <br />
             <span className="bg-gradient-primary bg-clip-text text-transparent">
               anywhere.
@@ -91,8 +94,11 @@ export const WelcomeSection = () => {
       <div className="w-full max-w-xl mx-auto px-4 relative z-10">
         <Card className="p-12 text-center shadow-2xl border-border/50">
           <div className="relative inline-block mb-8">
-            <div className="absolute inset-0 bg-gradient-primary blur-3xl opacity-30" />
-            <Shield className="w-20 h-20 text-primary mx-auto relative" />
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-300 to-slate-500 blur-3xl opacity-30" />
+            <Shield className="w-20 h-20 mx-auto relative" style={{
+              filter: 'drop-shadow(0 4px 8px rgba(148, 163, 184, 0.4)) drop-shadow(0 0 20px rgba(203, 213, 225, 0.3))',
+              color: '#cbd5e1'
+            }} />
           </div>
           
           <h2 className="text-4xl font-bold mb-4">
