@@ -4,7 +4,6 @@ import { CheckCircle2 } from 'lucide-react';
 import { useWeb3 } from '@/hooks/useWeb3';
 import { useReputation } from '@/hooks/useReputation';
 import { useUserProfile } from '@/hooks/useUserProfile';
-import defaultBanner from '@/assets/dashboard-banner.png';
 
 export const ProfileBanner = () => {
   const { account } = useWeb3();
@@ -13,17 +12,25 @@ export const ProfileBanner = () => {
 
   const displayAccount = account || "0x1234...5678";
   const displayReputation = reputation?.total || 0;
-  const bannerImage = profile.banner || defaultBanner;
+  const hasCustomBanner = profile.banner && profile.banner.trim() !== '';
 
   return (
     <div className="relative">
       {/* Banner Background */}
-      <div 
-        className="h-48 bg-cover bg-center bg-no-repeat rounded-t-2xl"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(${bannerImage})`
-        }}
-      />
+      {hasCustomBanner ? (
+        <div 
+          className="h-48 bg-cover bg-center bg-no-repeat rounded-t-2xl"
+          style={{
+            backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), url(${profile.banner})`
+          }}
+        />
+      ) : (
+        <div className="h-48 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-t-2xl flex items-center justify-center">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-300">
+            PrivID-TEN
+          </h2>
+        </div>
+      )}
       
       {/* Profile Section */}
       <div className="bg-card border-x border-border px-6 py-4">
